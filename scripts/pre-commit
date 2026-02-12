@@ -7,13 +7,18 @@ if [ -z "$FILES" ]; then
   exit 0
 fi
 
-echo "🔍 Vérification du formatage OCaml..."
-# Vérifie que ocaml format est installé
 if ! command -v ocamlformat >/dev/null 2>&1; then
-  echo "❌ ocaml format n'est pas installé."
-  echo "Installe-le avec : opam install ocaml format"
-  exit 1
+  echo "❌ ocamlformat n'est pas installé."
+  echo "📦 Installation de ocamlformat..."
+  opam install -y ocamlformat
+
+  if ! command -v ocamlformat >/dev/null 2>&1; then
+    echo "❌ Impossible d'installer ocamlformat. Veuillez l'installer manuellement avec: opam install ocamlformat"
+    exit 1
+  fi
+  echo "✅ ocamlformat installé avec succès!"
 fi
+
 
 # Formate les fichiers
 for file in $FILES; do
