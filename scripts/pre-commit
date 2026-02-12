@@ -1,4 +1,6 @@
 #!/bin/sh
+# Initialiser l'environnement opam
+eval $(opam env)
 # Récupère les fichiers Ocaml ajoutés ou modifiés dans l'index
 FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ml|mli)$')
 
