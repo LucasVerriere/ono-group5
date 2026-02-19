@@ -1,5 +1,5 @@
 (module
-
+  (func $print_i32 (import "ono" "print_i32") (param i32))
   (memory (export "memory") 1)
   (global $w i32 (i32.const 10))
   (global $h i32 (i32.const 20))
@@ -133,7 +133,34 @@
         (br $outer)
       )
     )
+  )
+
+  (func $set_alive (param $x i32) (param $y i32)
+    (i32.store8
+      (call $index (local.get $x) (local.get $y))
+      (i32.const 1)
+    )
+  )
+
+  (func $main
+    (call $set_alive (i32.const 1) (i32.const 0))
+    (call $set_alive (i32.const 2) (i32.const 1))
+    (call $set_alive (i32.const 0) (i32.const 2))
+    (call $set_alive (i32.const 1) (i32.const 2))
+    (call $set_alive (i32.const 2) (i32.const 2))
+
+    (call $step)
+
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 0) (i32.const 1)))))    
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 2) (i32.const 1))))) 
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 1) (i32.const 2))))) 
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 2) (i32.const 2))))) 
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 1) (i32.const 3))))) 
+
 
   )
+  (start $main)
+
+
 
 )
