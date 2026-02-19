@@ -151,11 +151,11 @@
 
     (call $step)
 
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 0) (i32.const 1)))))    
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 2) (i32.const 1))))) 
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 1) (i32.const 2))))) 
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 2) (i32.const 2))))) 
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 1) (i32.const 3))))) 
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 0) (i32.const 1)))))
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 2) (i32.const 1)))))
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 1) (i32.const 2)))))
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 2) (i32.const 2)))))
+    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 1) (i32.const 3)))))
 
 
   )

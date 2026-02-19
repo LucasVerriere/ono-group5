@@ -74,7 +74,6 @@ let source_file =
   Arg.(
     required & pos 0 (some existing_file_conv) None (info [] ~doc ~docv:"FILE"))
 
-let seed = 
-  let doc = "Random seed." in 
-  Arg.(
-    value & opt (some int) None (info ["seed"] ~doc ~docv:"SEED"))
+let seed =
+  let doc = "Random seed." in
+  Arg.(value & opt (some int) None (info [ "seed" ] ~doc ~docv:"SEED"))
