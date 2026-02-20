@@ -133,6 +133,27 @@
         (br $outer)
       )
     )
+
+    ;; Copy next buffer back to current buffer
+    (call $copy_buffer)
+  )
+
+  (func $copy_buffer
+    (local $i i32)
+    (local.set $i (i32.const 0))
+    (block $exit
+      (loop $loop
+        (br_if $exit
+          (i32.ge_u (local.get $i) (global.get $size))
+        )
+        (i32.store8
+          (local.get $i)
+          (i32.load8_u (i32.add (local.get $i) (global.get $next_offset)))
+        )
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $loop)
+      )
+    )
   )
 
   (func $set_alive (param $x i32) (param $y i32)
@@ -151,11 +172,20 @@
 
     (call $step)
 
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 0) (i32.const 1)))))
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 2) (i32.const 1)))))
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 1) (i32.const 2)))))
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 2) (i32.const 2)))))
-    (call $print_i32 (i32.load8_u (i32.add (global.get $next_offset) (call $index (i32.const 1) (i32.const 3)))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 0) (i32.const 1))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 1))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 1) (i32.const 2))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 2))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 1) (i32.const 3))))
+
+    (call $step)
+
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 1))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 2))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 3))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 0) (i32.const 2))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 1) (i32.const 3)))) 
+    (call $print_i32 (i32.load8_u (call $index (i32.const 0) (i32.const 1))))  
 
 
   )
