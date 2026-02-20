@@ -1,0 +1,33 @@
+#!/bin/sh
+# Initialiser l'environnement opam
+eval $(opam env)
+# Récupère les fichiers Ocaml ajoutés ou modifiés dans l'index
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ml|mli)$')
+
+# S'il y a aucun fichier Ocaml modifier on quitte
+if [ -z "$FILES" ]; then
+  exit 0
+fi
+
+if ! command -v ocamlformat >/dev/null 2>&1; then
+  echo "❌ ocamlformat n'est pas installé."
+  echo "📦 Installation de ocamlformat..."
+  opam install -y ocamlformat
+
+  if ! command -v ocamlformat >/dev/null 2>&1; then
+    echo "❌ Impossible d'installer ocamlformat. Veuillez l'installer manuellement avec: opam install ocamlformat"
+    exit 1
+  fi
+  echo "✅ ocamlformat installé avec succès!"
+fi
+
+
+# Formate les fichiers
+for file in $FILES; do
+  echo "→ Formatage de $file"
+  ocamlformat --inplace "$file"
+  git add "$file"
+done
+
+echo "✅ Formatage terminé."
+exit 0
