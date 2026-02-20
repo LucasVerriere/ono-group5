@@ -4,13 +4,17 @@
   (global $w i32 (i32.const 10))
   (global $h i32 (i32.const 20))
   (global $size i32 (i32.const 200))
-  (global $next_offset i32 (i32.const 200))
+  (global $current_offset (mut i32) (i32.const 0))
+  (global $next_offset (mut i32) (i32.const 200))
 
   ;; index = i * w + j
   (func $index (param $i i32) (param $j i32) (result i32)
     (i32.add
-      (i32.mul (local.get $i) (global.get $w))
-      (local.get $j)
+      (global.get $current_offset)
+      (i32.add
+        (i32.mul (local.get $i) (global.get $w))
+        (local.get $j)
+      )
     )
   )
 
@@ -120,7 +124,10 @@
 
             ;; write to next buffer
             (i32.store8
-              (i32.add (local.get $idx) (global.get $next_offset))
+              (i32.add
+                (global.get $next_offset)
+                (i32.sub (local.get $idx) (global.get $current_offset))
+              )
               (local.get $alive)
             )
 
@@ -134,27 +141,16 @@
       )
     )
 
-    ;; Copy next buffer back to current buffer
-    (call $copy_buffer)
+    (call $swap_buffers)
   )
 
-  (func $copy_buffer
-    (local $i i32)
-    (local.set $i (i32.const 0))
-    (block $exit
-      (loop $loop
-        (br_if $exit
-          (i32.ge_u (local.get $i) (global.get $size))
-        )
-        (i32.store8
-          (local.get $i)
-          (i32.load8_u (i32.add (local.get $i) (global.get $next_offset)))
-        )
-        (local.set $i (i32.add (local.get $i) (i32.const 1)))
-        (br $loop)
-      )
-    )
+  (func $swap_buffers
+    (local $temp i32)
+    (local.set $temp (global.get $current_offset))
+    (global.set $current_offset (global.get $next_offset))
+    (global.set $next_offset (local.get $temp))
   )
+  
 
   (func $set_alive (param $x i32) (param $y i32)
     (i32.store8
@@ -185,7 +181,25 @@
     (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 3))))
     (call $print_i32 (i32.load8_u (call $index (i32.const 0) (i32.const 2))))
     (call $print_i32 (i32.load8_u (call $index (i32.const 1) (i32.const 3)))) 
+    (call $print_i32 (i32.load8_u (call $index (i32.const 0) (i32.const 1)))) 
+
+    (call $step)
+
+    (call $print_i32 (i32.load8_u (call $index (i32.const 1) (i32.const 1))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 2))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 3) (i32.const 2))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 1) (i32.const 3))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 3)))) 
     (call $print_i32 (i32.load8_u (call $index (i32.const 0) (i32.const 1))))  
+
+    (call $step)
+
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 1))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 3) (i32.const 2))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 1) (i32.const 3))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 3) (i32.const 3))))
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 3)))) 
+    (call $print_i32 (i32.load8_u (call $index (i32.const 2) (i32.const 2))))  
 
 
   )
