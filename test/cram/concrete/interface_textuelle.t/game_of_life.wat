@@ -54,28 +54,23 @@
 
   ;; ===== Compte les 8 voisins vivants =====
   (func $count_alive_neighbours (param $i i32) (param $j i32) (result i32)
-    (i32.add
-      (call $is_alive (i32.sub (local.get $i) (i32.const 1)) (i32.sub (local.get $j) (i32.const 1)))
-      (i32.add
-        (call $is_alive (i32.sub (local.get $i) (i32.const 1)) (local.get $j))
-        (i32.add
-          (call $is_alive (i32.sub (local.get $i) (i32.const 1)) (i32.add (local.get $j) (i32.const 1)))
-          (i32.add
-            (call $is_alive (local.get $i) (i32.sub (local.get $j) (i32.const 1)))
-            (i32.add
-              (call $is_alive (local.get $i) (i32.add (local.get $j) (i32.const 1)))
-              (i32.add
-                (call $is_alive (i32.add (local.get $i) (i32.const 1)) (i32.sub (local.get $j) (i32.const 1)))
-                (i32.add
-                  (call $is_alive (i32.add (local.get $i) (i32.const 1)) (local.get $j))
-                  (call $is_alive (i32.add (local.get $i) (i32.const 1)) (i32.add (local.get $j) (i32.const 1)))
-                )
-              )
-            )
-          )
-        )
-      )
-    )
+    (call $is_alive (i32.sub (local.get $i) (i32.const 1)) (i32.sub (local.get $j) (i32.const 1)))
+    (call $is_alive (i32.sub (local.get $i) (i32.const 1)) (local.get $j))
+    (call $is_alive (i32.sub (local.get $i) (i32.const 1)) (i32.add (local.get $j) (i32.const 1)))
+    (call $is_alive (local.get $i) (i32.sub (local.get $j) (i32.const 1)))
+    (call $is_alive (local.get $i) (i32.add (local.get $j) (i32.const 1)))
+    (call $is_alive (i32.add (local.get $i) (i32.const 1)) (i32.sub (local.get $j) (i32.const 1)))
+    (call $is_alive (i32.add (local.get $i) (i32.const 1)) (local.get $j))
+    (call $is_alive (i32.add (local.get $i) (i32.const 1)) (i32.add (local.get $j) (i32.const 1)))
+
+    i32.add
+    i32.add
+    i32.add
+    i32.add
+    i32.add
+    i32.add
+    i32.add
+
   )
 
   ;; ===== Swap des buffers =====
@@ -130,7 +125,7 @@
 
             ;; Petite chance d'apparition spontanée (1/10000)
             (if
-              (i32.eq (call $random_i32) (i32.const 0))
+            (i32.eq (i32.rem_u (call $random_i32) (i32.const 10000)) (i32.const 0))
               (then (local.set $alive (i32.const 1)))
             )
 
