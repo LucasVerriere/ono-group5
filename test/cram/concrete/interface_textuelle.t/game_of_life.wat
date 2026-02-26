@@ -127,7 +127,7 @@
 
             ;; Petite chance d'apparition spontanée (1/10000)
             (if
-              (i32.eq (call $random_i32) (i32.const 0))
+            (i32.eq (i32.rem_u (call $random_i32) (i32.const 10000)) (i32.const 0))
               (then (local.set $alive (i32.const 1)))
             )
 
