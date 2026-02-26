@@ -5,9 +5,23 @@ open Ono_cli
 
 let info = Cmd.info "concrete" ~exits
 
+(* Nouvel argument --file *)
+let config_file =
+  let doc = "Initial configuration file (.life format)." in
+  Arg.(
+    value
+    & opt (some existing_file_conv) None (info [ "file" ] ~doc ~docv:"CONFIG"))
+
 let term =
   let open Term.Syntax in
-  let+ () = setup_log and+ source_file = source_file and+ seed = seed in
+  let+ () = setup_log
+  and+ source_file = source_file
+  and+ seed = seed
+  and+ config_file = config_file in
+  (* Charger le fichier de config si fourni *)
+  (match config_file with
+  | Some path -> Ono.Concrete_ono_module.load_config_file (Fpath.to_string path)
+  | None -> ());
   Ono.Concrete_driver.run ~source_file ~seed |> function
   | Ok () -> Ok ()
   | Error e -> Error (`Msg (Kdo.R.err_to_string e))

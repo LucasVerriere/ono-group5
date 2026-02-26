@@ -49,7 +49,7 @@ let sleep (duration : Kdo.Concrete.F32.t) : (unit, _) Result.t =
   Ok ()
 
 let get_steps () : (Kdo.Concrete.I32.t, _) Result.t =
-  Ok (Kdo.Concrete.I32.of_int 5)
+  Ok (Kdo.Concrete.I32.of_int 2)
 (* mettre -1 pour mode interactif infini *)
 
 let get_tail () : (Kdo.Concrete.I32.t, _) Result.t =
@@ -62,6 +62,58 @@ let read_int () : (Kdo.Concrete.I32.t, _) Result.t =
     let value = Int32.of_string line in
     Ok (Kdo.Concrete.I32.of_int32 value)
   with _ -> Ok (Kdo.Concrete.I32.of_int32 0l)
+
+(* Lecture du fichier de configuration *)
+let config_cells : int array ref = ref [||]
+let config_index = ref 0
+let config_w = ref 0
+let config_h = ref 0
+let has_config = ref false
+
+let load_config_file path =
+  let ic = open_in path in
+  let line = input_line ic in
+  let parts = String.split_on_char ' ' (String.trim line) in
+  (match parts with
+  | [ w_s; h_s ] ->
+      config_w := int_of_string w_s;
+      config_h := int_of_string h_s
+  | _ -> failwith "Format invalide : première ligne doit être 'w h'");
+  let cells = Buffer.create 256 in
+  (try
+     while true do
+       let row = input_line ic in
+       String.iter (fun c -> Buffer.add_char cells c) (String.trim row)
+     done
+   with End_of_file -> ());
+  close_in ic;
+  config_cells :=
+    Array.init (Buffer.length cells) (fun i ->
+        if Buffer.nth cells i = 'X' then 1 else 0);
+  config_index := 0;
+  has_config := true
+
+(* Appelé depuis Wasm pour savoir si un fichier a été fourni *)
+let has_config_file () : (Kdo.Concrete.I32.t, _) Result.t =
+  Ok (Kdo.Concrete.I32.of_int (if !has_config then 1 else 0))
+
+(* Appelé depuis Wasm pour lire la largeur du fichier *)
+let config_get_w () : (Kdo.Concrete.I32.t, _) Result.t =
+  Ok (Kdo.Concrete.I32.of_int !config_w)
+
+(* Appelé depuis Wasm pour lire la hauteur du fichier *)
+let config_get_h () : (Kdo.Concrete.I32.t, _) Result.t =
+  Ok (Kdo.Concrete.I32.of_int !config_h)
+
+(* Appelé depuis Wasm pour lire cellule par cellule *)
+let config_next_cell () : (Kdo.Concrete.I32.t, _) Result.t =
+  let cells = !config_cells in
+  let idx = !config_index in
+  if idx >= Array.length cells then Ok (Kdo.Concrete.I32.of_int 0)
+  else begin
+    incr config_index;
+    Ok (Kdo.Concrete.I32.of_int cells.(idx))
+  end
 
 let m =
   let open Kdo.Concrete.Extern_func in
@@ -78,6 +130,10 @@ let m =
       ("read_int", Extern_func (unit ^->. i32, read_int));
       ("get_steps", Extern_func (unit ^->. i32, get_steps));
       ("get_tail", Extern_func (unit ^->. i32, get_tail));
+      ("has_config_file", Extern_func (unit ^->. i32, has_config_file));
+      ("config_get_w", Extern_func (unit ^->. i32, config_get_w));
+      ("config_get_h", Extern_func (unit ^->. i32, config_get_h));
+      ("config_next_cell", Extern_func (unit ^->. i32, config_next_cell));
     ]
   in
   {

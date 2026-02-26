@@ -1,19 +1,22 @@
 (module
 
   ;; ===== Imports depuis le module OCaml "ono" =====
-  (import "ono" "random_i32"   (func $random_i32   (result i32)))
-  (import "ono" "print_cell"   (func $print_cell   (param i32)))
+  (import "ono" "random_i32"   (func $random_i32 (result i32)))
+  (import "ono" "print_cell"   (func $print_cell (param i32)))
   (import "ono" "newline"      (func $newline))
   (import "ono" "clear_screen" (func $clear_screen))
-  (import "ono" "sleep"        (func $sleep        (param f32)))
+  (import "ono" "sleep"        (func $sleep(param f32)))
   (import "ono" "get_steps" (func $get_steps (result i32)))
+  (import "ono" "has_config_file"  (func $has_config_file  (result i32)))
+  (import "ono" "config_next_cell" (func $config_next_cell (result i32)))
+
 
   ;; ===== Mémoire =====
   (memory (export "memory") 1)
 
   ;; ===== Dimensions et offsets =====
-  (global $w              i32       (i32.const 90))
-  (global $h              i32       (i32.const 50))
+  (global $w              i32       (i32.const 10))
+  (global $h              i32       (i32.const 10))
   (global $size           i32       (i32.const 4500))   ;; w * h
   (global $current_offset (mut i32) (i32.const 0))
   (global $next_offset    (mut i32) (i32.const 4500))
@@ -221,19 +224,47 @@
     (call $clear_screen)
   )
 
+  (func $init_from_file
+    (local $i i32)
+    (local $j i32)
+    (local.set $i (i32.const 0))
+    (block $outer_exit
+      (loop $outer
+        (br_if $outer_exit (i32.ge_s (local.get $i) (global.get $h)))
+        (local.set $j (i32.const 0))
+        (block $inner_exit
+          (loop $inner
+            (br_if $inner_exit (i32.ge_s (local.get $j) (global.get $w)))
+            (i32.store8
+              (call $index (local.get $i) (local.get $j))
+              (call $config_next_cell)
+            )
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $inner)
+          )
+        )
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $outer)
+      )
+    )
+  )
+
   ;; ===== Boucle principale =====
   (func $main
     (local $steps i32)
     (local $i i32)
 
-    (call $init_grid)
+    ;; init selon si fichier fourni ou non
+    (if (i32.eq (call $has_config_file) (i32.const 1))
+      (then (call $init_from_file))
+      (else (call $init_grid))
+    )
 
     ;; récupère le nombre d'étapes (-1 = infini)
     (local.set $steps (call $get_steps))
     (local.set $i (i32.const 0))
 
     (block $exit
-     
       (loop $loop
         ;; si steps != -1 et i >= steps, on sort
         (br_if $exit
@@ -245,7 +276,6 @@
         (call $print_grid)
         (call $step)
         (call $sleep (f32.const 0.05))
-
         (local.set $i (i32.add (local.get $i) (i32.const 1)))
         (br $loop)
       )

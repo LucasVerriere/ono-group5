@@ -4,13 +4,16 @@ Test the output of the man page:
          ono-concrete
   
   SYNOPSIS
-         ono concrete [--seed=SEED] [OPTION]… FILE
+         ono concrete [--file=CONFIG] [--seed=SEED] [OPTION]… FILE
   
   ARGUMENTS
          FILE (required)
              Source file to analyze.
   
   OPTIONS
+         --file=CONFIG
+             Initial configuration file (.life format).
+  
          --seed=SEED
              Random seed.
   
