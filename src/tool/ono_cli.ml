@@ -77,3 +77,7 @@ let source_file =
 let seed =
   let doc = "Random seed." in
   Arg.(value & opt (some int) None (info [ "seed" ] ~doc ~docv:"SEED"))
+
+let steps =
+  let doc = "Number of steps to simulate." in
+  Arg.(value & opt (some int) None (info [ "steps" ] ~doc ~docv:"STEPS"))

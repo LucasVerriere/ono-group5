@@ -1,8 +1,7 @@
 open Syntax
 module Interpret = Kdo.Interpret.Concrete (Kdo.Interpret.Default_parameters)
 
-let run ~source_file ~seed =
-  (match seed with Some s -> Random.init s | None -> Random.self_init ());
+let run ~source_file =
 
   (* Parsing. *)
   Logs.info (fun m -> m "Parsing file %a..." Fpath.pp source_file);

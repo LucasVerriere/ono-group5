@@ -17,12 +17,15 @@ let term =
   let+ () = setup_log
   and+ source_file = source_file
   and+ seed = seed
-  and+ config_file = config_file in
+  and+ config_file = config_file 
+  and+ steps = steps in
+  Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> 0);
   (* Charger le fichier de config si fourni *)
+  (match seed with Some s -> Random.init s | None -> Random.self_init ());
   (match config_file with
   | Some path -> Ono.Concrete_ono_module.load_config_file (Fpath.to_string path)
   | None -> ());
-  Ono.Concrete_driver.run ~source_file ~seed |> function
+  Ono.Concrete_driver.run ~source_file |> function
   | Ok () -> Ok ()
   | Error e -> Error (`Msg (Kdo.R.err_to_string e))
 

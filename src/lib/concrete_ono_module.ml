@@ -48,10 +48,6 @@ let sleep (duration : Kdo.Concrete.F32.t) : (unit, _) Result.t =
   Unix.sleepf seconds;
   Ok ()
 
-let get_steps () : (Kdo.Concrete.I32.t, _) Result.t =
-  Ok (Kdo.Concrete.I32.of_int 2)
-(* mettre -1 pour mode interactif infini *)
-
 let get_tail () : (Kdo.Concrete.I32.t, _) Result.t =
   Ok (Kdo.Concrete.I32.of_int 0)
 (* 0 => afficher toutes les étapes *)
@@ -68,6 +64,7 @@ let config_cells : int array ref = ref [||]
 let config_index = ref 0
 let config_w = ref 0
 let config_h = ref 0
+let steps = ref 0
 let has_config = ref false
 
 let load_config_file path =
@@ -104,6 +101,10 @@ let config_get_w () : (Kdo.Concrete.I32.t, _) Result.t =
 (* Appelé depuis Wasm pour lire la hauteur du fichier *)
 let config_get_h () : (Kdo.Concrete.I32.t, _) Result.t =
   Ok (Kdo.Concrete.I32.of_int !config_h)
+
+let get_steps () : (Kdo.Concrete.I32.t, _) Result.t =
+  Ok (Kdo.Concrete.I32.of_int !steps)
+(* mettre -1 pour mode interactif infini *)
 
 (* Appelé depuis Wasm pour lire cellule par cellule *)
 let config_next_cell () : (Kdo.Concrete.I32.t, _) Result.t =
