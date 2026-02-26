@@ -26,9 +26,16 @@ let newline () : (unit, _) Result.t =
   Buffer.add_char display_buffer '\n';
   Ok ()
 
+let step_counter = ref 0
+
 let clear_screen () : (unit, _) Result.t =
   (* Efface l'écran avec le code ANSI *)
+  incr step_counter;
   Format.printf "\027[2J";
+  Format.printf
+    "================================================== Step n° %d \
+     ==================================================\n"
+    !step_counter;
   (* Affiche le contenu du buffer *)
   Format.printf "%s" (Buffer.contents display_buffer);
   Format.pp_print_flush Format.std_formatter ();
@@ -38,15 +45,15 @@ let clear_screen () : (unit, _) Result.t =
 
 let sleep (duration : Kdo.Concrete.F32.t) : (unit, _) Result.t =
   let seconds = Kdo.Concrete.F32.to_float duration in
-  Thread.delay seconds;
+  Unix.sleepf seconds;
   Ok ()
 
 let get_steps () : (Kdo.Concrete.I32.t, _) Result.t =
-  Ok (Kdo.Concrete.I32.of_int 2)
+  Ok (Kdo.Concrete.I32.of_int 5)
 (* mettre -1 pour mode interactif infini *)
 
 let get_tail () : (Kdo.Concrete.I32.t, _) Result.t =
-  Ok (Kdo.Concrete.I32.of_int 2)
+  Ok (Kdo.Concrete.I32.of_int 0)
 (* 0 => afficher toutes les étapes *)
 
 let read_int () : (Kdo.Concrete.I32.t, _) Result.t =
@@ -67,6 +74,7 @@ let m =
       ("print_cell", Extern_func (i32 ^->. unit, print_cell));
       ("newline", Extern_func (unit ^->. unit, newline));
       ("clear_screen", Extern_func (unit ^->. unit, clear_screen));
+      ("sleep", Extern_func (f32 ^->. unit, sleep));
       ("read_int", Extern_func (unit ^->. i32, read_int));
       ("get_steps", Extern_func (unit ^->. i32, get_steps));
       ("get_tail", Extern_func (unit ^->. i32, get_tail));
