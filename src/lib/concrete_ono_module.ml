@@ -31,6 +31,7 @@ let step_counter = ref 0
 let clear_screen () : (unit, _) Result.t =
   (* Efface l'écran avec le code ANSI *)
   incr step_counter;
+  Format.printf "\027[2J\027[H";
   Format.printf
     "================================================== Step n° %d \
      ==================================================\n"
