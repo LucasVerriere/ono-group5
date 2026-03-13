@@ -19,7 +19,7 @@ let term =
   and+ seed = seed
   and+ config_file = config_file 
   and+ steps = steps in
-  Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> 0);
+  Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> Int.max_int);
   (* Charger le fichier de config si fourni *)
   (match seed with Some s -> Random.init s | None -> Random.self_init ());
   (match config_file with

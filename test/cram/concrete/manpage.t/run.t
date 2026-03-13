@@ -4,7 +4,8 @@ Test the output of the man page:
          ono-concrete
   
   SYNOPSIS
-         ono concrete [--file=CONFIG] [--seed=SEED] [OPTION]… FILE
+         ono concrete [--file=CONFIG] [--seed=SEED] [--steps=STEPS] [OPTION]…
+         FILE
   
   ARGUMENTS
          FILE (required)
@@ -16,6 +17,9 @@ Test the output of the man page:
   
          --seed=SEED
              Random seed.
+  
+         --steps=STEPS
+             Number of steps to simulate.
   
   COMMON OPTIONS
          --color=WHEN (absent=auto)

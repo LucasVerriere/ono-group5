@@ -18,7 +18,7 @@ let print_i64 (n : Kdo.Concrete.I64.t) : (unit, _) Result.t =
 
 let print_cell (cell : Kdo.Concrete.I32.t) : (unit, _) Result.t =
   let cell_int = Kdo.Concrete.I32.to_int cell in
-  let symbol = if cell_int <> 0 then "🦊" else " " in
+  let symbol = if cell_int <> 0 then "X" else " " in
   Buffer.add_string display_buffer symbol;
   Ok ()
 
@@ -31,7 +31,6 @@ let step_counter = ref 0
 let clear_screen () : (unit, _) Result.t =
   (* Efface l'écran avec le code ANSI *)
   incr step_counter;
-  Format.printf "\027[2J";
   Format.printf
     "================================================== Step n° %d \
      ==================================================\n"
