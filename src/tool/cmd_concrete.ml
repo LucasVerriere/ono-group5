@@ -21,8 +21,7 @@ let term =
   and+ steps = steps 
   and+ use_graphical_window = use_graphical_window in
   if use_graphical_window then
-     (print_endline "Graphical window mode";
-     Ok())
+    (Ono.Concrete_gui.run ())
   else
   (Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> Int.max_int);
   (* Charger le fichier de config si fourni *)
