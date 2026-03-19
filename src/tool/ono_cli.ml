@@ -81,3 +81,7 @@ let seed =
 let steps =
   let doc = "Number of steps to simulate." in
   Arg.(value & opt (some int) None (info [ "steps" ] ~doc ~docv:"STEPS"))
+
+let use_graphical_window =
+  let doc = "Window to display the game." in
+  Arg.(value  & flag (info [ "use-graphical-window" ] ~doc ~docv:"USE GRAPHICAL WINDOW"))
