@@ -81,3 +81,7 @@ let seed =
 let steps =
   let doc = "Number of steps to simulate." in
   Arg.(value & opt (some int) None (info [ "steps" ] ~doc ~docv:"STEPS"))
+
+let sleep_duration_ms =
+  let doc = "Sleep duration between steps in milliseconds." in
+  Arg.(value & opt (some int) None (info [ "sleep" ] ~doc ~docv:"SLEEP"))

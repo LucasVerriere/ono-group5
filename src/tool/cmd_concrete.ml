@@ -18,6 +18,7 @@ let term =
   and+ source_file = source_file
   and+ seed = seed
   and+ config_file = config_file 
+  and+ sleep = sleep_duration_ms
   and+ steps = steps in
   Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> Int.max_int);
   (* Charger le fichier de config si fourni *)
@@ -25,7 +26,7 @@ let term =
   (match config_file with
   | Some path -> Ono.Concrete_ono_module.load_config_file (Fpath.to_string path)
   | None -> ());
-  Ono.Concrete_driver.run ~source_file |> function
+  Ono.Concrete_driver.run ~source_file ~sleep |> function
   | Ok () -> Ok ()
   | Error e -> Error (`Msg (Kdo.R.err_to_string e))
 
