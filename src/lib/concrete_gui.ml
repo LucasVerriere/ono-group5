@@ -1,7 +1,7 @@
 open Raylib
 
-let numRows = 10
-let numCols = 10
+let numRows = 20
+let numCols = 20
 
 let draw_grid ()=
   let w = get_screen_width () in

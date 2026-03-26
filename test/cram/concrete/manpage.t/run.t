@@ -4,7 +4,7 @@ Test the output of the man page:
          ono-concrete
   
   SYNOPSIS
-         ono concrete [--file=CONFIG] [--seed=SEED] [--steps=STEPS] [OPTION]…
+         ono concrete [--file=CONFIG] [--seed=SEED] [--steps=STEPS] [--use-graphical-window=USE GRAPHICAL WINDOW] [OPTION]…
          FILE
   
   ARGUMENTS
@@ -20,6 +20,10 @@ Test the output of the man page:
   
          --steps=STEPS
              Number of steps to simulate.
+        
+         --use-graphical-window
+             Window to display the game.
+
   
   COMMON OPTIONS
          --color=WHEN (absent=auto)
