@@ -42,8 +42,13 @@ let clear_screen () : (unit, _) Result.t =
   Buffer.clear display_buffer;
   Ok ()
 
-let sleep (duration : Kdo.Concrete.F32.t) : (unit, _) Result.t =
-  let seconds = Kdo.Concrete.F32.to_float duration in
+let sleep_duration_ms = ref 50
+
+let set_sleep_duration_ms ms =
+  sleep_duration_ms := ms
+
+let sleep () : (unit, _) Result.t =
+  let seconds = Float.of_int !sleep_duration_ms /. 1000.0 in
   Unix.sleepf seconds;
   Ok ()
 
@@ -115,6 +120,7 @@ let config_next_cell () : (Kdo.Concrete.I32.t, _) Result.t =
     Ok (Kdo.Concrete.I32.of_int cells.(idx))
   end
 
+
 let m =
   let open Kdo.Concrete.Extern_func in
   let open Kdo.Concrete.Extern_func.Syntax in
@@ -126,7 +132,7 @@ let m =
       ("print_cell", Extern_func (i32 ^->. unit, print_cell));
       ("newline", Extern_func (unit ^->. unit, newline));
       ("clear_screen", Extern_func (unit ^->. unit, clear_screen));
-      ("sleep", Extern_func (f32 ^->. unit, sleep));
+      ("sleep", Extern_func (unit ^->. unit, sleep));
       ("read_int", Extern_func (unit ^->. i32, read_int));
       ("get_steps", Extern_func (unit ^->. i32, get_steps));
       ("get_tail", Extern_func (unit ^->. i32, get_tail));

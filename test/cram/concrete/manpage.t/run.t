@@ -4,8 +4,7 @@ Test the output of the man page:
          ono-concrete
   
   SYNOPSIS
-         ono concrete [--file=CONFIG] [--seed=SEED] [--steps=STEPS] [--use-graphical-window=USE GRAPHICAL WINDOW] [OPTION]…
-         FILE
+         ono concrete [OPTION]… FILE
   
   ARGUMENTS
          FILE (required)
@@ -18,12 +17,14 @@ Test the output of the man page:
          --seed=SEED
              Random seed.
   
+         --sleep=SLEEP
+             Sleep duration between steps in milliseconds.
+  
          --steps=STEPS
              Number of steps to simulate.
-        
+  
          --use-graphical-window
              Window to display the game.
-
   
   COMMON OPTIONS
          --color=WHEN (absent=auto)
@@ -80,3 +81,4 @@ Test the output of the man page:
   SEE ALSO
          ono(1)
   
+
