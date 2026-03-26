@@ -21,12 +21,13 @@ let term =
   and+ sleep = sleep_duration_ms
   and+ steps = steps in
   Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> Int.max_int);
+  (match sleep with Some ms -> Ono.Concrete_ono_module.set_sleep_duration_ms ms | None -> ());
   (* Charger le fichier de config si fourni *)
   (match seed with Some s -> Random.init s | None -> Random.self_init ());
   (match config_file with
   | Some path -> Ono.Concrete_ono_module.load_config_file (Fpath.to_string path)
   | None -> ());
-  Ono.Concrete_driver.run ~source_file ~sleep |> function
+  Ono.Concrete_driver.run ~source_file |> function
   | Ok () -> Ok ()
   | Error e -> Error (`Msg (Kdo.R.err_to_string e))
 

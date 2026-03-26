@@ -1,8 +1,7 @@
 open Syntax
 module Interpret = Kdo.Interpret.Concrete (Kdo.Interpret.Default_parameters)
 
-let run ~source_file ~sleep =
-  (match sleep with Some ms -> Concrete_ono_module.set_sleep_duration_ms ms | None -> ());
+let run ~source_file =
 
   (* Parsing. *)
   Logs.info (fun m -> m "Parsing file %a..." Fpath.pp source_file);

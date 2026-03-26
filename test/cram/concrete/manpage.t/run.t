@@ -1,11 +1,10 @@
 Test the output of the man page:
-  $ ono concrete --help=plain
+  $ ono concrete --help=plain --verbose
   NAME
          ono-concrete
   
   SYNOPSIS
-         ono concrete [--file=CONFIG] [--seed=SEED] [--steps=STEPS] [OPTION]…
-         FILE
+         ono concrete [OPTION]… FILE
   
   ARGUMENTS
          FILE (required)
@@ -17,6 +16,9 @@ Test the output of the man page:
   
          --seed=SEED
              Random seed.
+  
+         --sleep=SLEEP
+             Sleep duration between steps in milliseconds.
   
          --steps=STEPS
              Number of steps to simulate.
