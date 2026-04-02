@@ -19,20 +19,25 @@ let term =
   and+ seed = seed
   and+ config_file = config_file 
   and+ steps = steps 
-  and+ sleep = sleep_duration_ms
-  and+ use_graphical_window = use_graphical_window in
-  if use_graphical_window then
-    (Ono.Concrete_gui.run ())
-  else
-    (Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> Int.max_int);
+  and+ use_graphical_window = use_graphical_window
+  and+ sleep = sleep_duration_ms in
+
+    Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> Int.max_int);
     (match sleep with Some ms -> Ono.Concrete_ono_module.set_sleep_duration_ms ms | None -> ());
     (* Charger le fichier de config si fourni *)
     (match seed with Some s -> Random.init s | None -> Random.self_init ());
     (match config_file with
-    | Some path -> Ono.Concrete_ono_module.load_config_file (Fpath.to_string path)
+    | Some path -> (Ono.Concrete_ono_module.load_config_file (Fpath.to_string path); 
+    if use_graphical_window then 
+      (
+        Ono.Concrete_gui.init ~nb_rows:!(Ono.Concrete_ono_module.config_h) ~nb_cols:!(Ono.Concrete_ono_module.config_w); 
+        while not (Ono.Concrete_gui.w_should_close ()) do
+          Ono.Concrete_gui.render ()
+        done
+      )
+    )
     | None -> ());
     Ono.Concrete_driver.run ~source_file |> function
     | Ok () -> Ok ()
-    | Error e -> Error (`Msg (Kdo.R.err_to_string e)))
-
+    | Error e -> Error (`Msg (Kdo.R.err_to_string e))
 let cmd : Ono_cli.outcome Cmd.t = Cmd.v info term
