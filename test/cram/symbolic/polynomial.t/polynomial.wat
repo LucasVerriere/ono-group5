@@ -20,10 +20,10 @@
         (local.set $x2 (i32.mul (local.get $x) (local.get $x)))
         (local.set $x3 (i32.mul (local.get $x2) (local.get $x)))
 
-        (local.set $a (i32.const 0))
-        (local.set $b (i32.const 1))
-        (local.set $c (i32.const 2))
-        (local.set $d (i32.const 1))
+        (local.set $a (call $read_i32))
+        (local.set $b (call $read_i32))
+        (local.set $c (call $read_i32))
+        (local.set $d (call $read_i32))
 
         (local.set $p
             (i32.add
@@ -38,7 +38,15 @@
             )
         )
 
-        (if (i32.eq (local.get $p) (i32.const 0)) (then unreachable))
+        (if (i32.gt_s (local.get $x) (i32.const -1000))
+            (then
+                (if (i32.lt_s (local.get $x) (i32.const 1000))
+                    (then
+                        (if (i32.eq (local.get $p) (i32.const 0)) (then unreachable))
+                    )
+                )
+            )
+        )
 
     )
 
