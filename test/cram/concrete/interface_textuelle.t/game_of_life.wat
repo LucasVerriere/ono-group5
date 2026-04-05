@@ -15,11 +15,11 @@
   (memory (export "memory") 1)
 
   ;; ===== Dimensions et offsets =====
-  (global $w              i32       (i32.const 10))
-  (global $h              i32       (i32.const 10))
-  (global $size           i32       (i32.const 4500))   ;; w * h
+  (global $w              i32       (i32.const 20))
+  (global $h              i32       (i32.const 20))
+  (global $size           i32       (i32.const 400))   ;; w * h
   (global $current_offset (mut i32) (i32.const 0))
-  (global $next_offset    (mut i32) (i32.const 4500))
+  (global $next_offset    (mut i32) (i32.const 400))
 
   ;; ===== index(i, j) = current_offset + i * w + j =====
   (func $index (param $i i32) (param $j i32) (result i32)
