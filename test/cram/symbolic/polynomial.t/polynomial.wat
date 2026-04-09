@@ -2,6 +2,9 @@
     (func $print_i32 (import "ono" "print_i32") (param i32))
     (func $i32_symbol (import "ono" "i32_symbol") (result i32))
     (func $read_i32 (import "ono" "read_i32") (result i32))
+    (func $print_header (import "ono" "print_header"))
+    (func $print_solutions (import "ono" "print_solutions"))
+    (func $prompt (import "ono" "prompt"))
 
     (func $main
 
@@ -16,13 +19,19 @@
 
         (local $p i32)
 
+        (call $print_header)
+
         (local.set $x (call $i32_symbol))
         (local.set $x2 (i32.mul (local.get $x) (local.get $x)))
         (local.set $x3 (i32.mul (local.get $x2) (local.get $x)))
 
+        (call $prompt)
         (local.set $a (call $read_i32))
+        (call $prompt)
         (local.set $b (call $read_i32))
+        (call $prompt)
         (local.set $c (call $read_i32))
+        (call $prompt)
         (local.set $d (call $read_i32))
 
         (local.set $p
@@ -37,6 +46,8 @@
                 )
             )
         )
+
+        (call $print_solutions)
 
         (if (i32.gt_s (local.get $x) (i32.const -1000))
             (then
