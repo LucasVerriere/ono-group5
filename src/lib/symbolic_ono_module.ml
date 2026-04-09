@@ -8,9 +8,14 @@ let i32_symbol () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
   Kdo.Symbolic.Choice.with_new_symbol (Smtml.Ty.Ty_bitv 32)
     Kdo.Symbolic.I32.symbol
 
-let read_i32 () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
-  let value = read_int () in
-  Kdo.Symbolic.Choice.return (Kdo.Symbolic.I32.of_int value)
+let rec read_i32 () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
+  try
+    let value = read_int () in
+    Kdo.Symbolic.Choice.return (Kdo.Symbolic.I32.of_int value)
+  with Failure _ ->
+    Printf.printf " pleaz enter a number\n  > ";
+    Out_channel.flush Out_channel.stdout;
+    read_i32 ()
 
 let print_prompt () : unit Kdo.Symbolic.Choice.t =
   print_string "Entrez le numéro de la contrainte : ";
