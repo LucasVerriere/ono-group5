@@ -49,15 +49,7 @@
 
         (call $print_solutions)
 
-        (if (i32.gt_s (local.get $x) (i32.const -1000))
-            (then
-                (if (i32.lt_s (local.get $x) (i32.const 1000))
-                    (then
-                        (if (i32.eq (local.get $p) (i32.const 0)) (then unreachable))
-                    )
-                )
-            )
-        )
+        (if (i32.eq (local.get $p) (i32.const 0)) (then unreachable))
 
     )
 
