@@ -164,7 +164,7 @@
 
 
   ;; initialisation de la grille : Seules les 9 cellules du voisinage de (TARGET_I, TARGET_J) sont symboliques
-  (func $symbol_init_for_constraints_1_or_2 
+  (func $grid_init_for_constraints_1_or_2 
     (local $i i32)
     (local $j i32)
     (local $sym i32)
@@ -185,7 +185,7 @@
   )
 
   (func $init_configuration
-    (call $symbol_init_for_constraints_1_or_2)
+    (call $grid_init_for_constraints_1_or_2)
 
     (call $step)
   )
