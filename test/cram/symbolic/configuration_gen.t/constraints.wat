@@ -2,6 +2,7 @@
 
   (func $i32_symbol (import "ono" "i32_symbol") (result i32))
   (func $print_i32  (import "ono" "print_i32")  (param i32))
+  (func $read_i32 (import "ono" "read_i32") (result i32))
 
   (memory (export "memory") 1)
 
@@ -162,13 +163,11 @@
   )
 
 
-  (func $main
+  ;; initialisation de la grille : Seules les 9 cellules du voisinage de (TARGET_I, TARGET_J) sont symboliques
+  (func $symbol_init_for_constraints_1_or_2 
     (local $i i32)
     (local $j i32)
     (local $sym i32)
-
-    ;; initialisation de la grille : Seules les 9 cellules du voisinage de (TARGET_I, TARGET_J) sont symboliques
-
     (local.set $i (i32.sub (global.get $TARGET_I) (i32.const 1)))
     (block $oi (loop $li
       (br_if $oi (i32.gt_s (local.get $i) (i32.add (global.get $TARGET_I) (i32.const 1))))
@@ -183,16 +182,42 @@
       (local.set $i (i32.add (local.get $i) (i32.const 1)))
       (br $li)
     ))
+  )
+
+  (func $init_configuration
+    (call $symbol_init_for_constraints_1_or_2)
 
     (call $step)
+  )
 
-    (if (call $constraint_2) (then unreachable))
-
-    ;; afficher la grille initiale
+  (func $print_initial_grid
     (call $swap_buffers)
     (call $print_i32 (global.get $w))
     (call $print_i32 (global.get $h))
     (call $print_grid)
+  )
+
+  (func $main
+
+    (local $constraint_to_calculate i32)
+    (local.set $constraint_to_calculate (call $read_i32))
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 1)) 
+      (then 
+        (call $init_configuration)
+        (if (call $constraint_1) (then unreachable))
+      )
+    )
+        
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 2)) 
+      (then 
+        (call $init_configuration)
+        (if (call $constraint_2) (then unreachable))
+      )
+    )
+
+    (call $print_initial_grid)
+    
   )
 
   (start $main)
