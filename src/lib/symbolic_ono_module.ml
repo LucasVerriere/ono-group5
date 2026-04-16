@@ -8,6 +8,17 @@ let i32_symbol () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
   Kdo.Symbolic.Choice.with_new_symbol (Smtml.Ty.Ty_bitv 32)
     Kdo.Symbolic.I32.symbol
 
+let assume (b : Kdo.Symbolic.I32.t) : unit Kdo.Symbolic.Choice.t =
+  Kdo.Symbolic.Choice.assume (Kdo.Symbolic.I32.to_boolean b) None
+
+let restrict_x_enabled = ref false
+
+let set_restrict_x value = restrict_x_enabled := value
+
+let restrict_x () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
+  Kdo.Symbolic.Choice.return
+    (Kdo.Symbolic.I32.of_int (if !restrict_x_enabled then 1 else 0))
+
 let rec read_i32 () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
   try
     let value = read_int () in
@@ -34,7 +45,7 @@ let prompt () : unit Kdo.Symbolic.Choice.t =
 
 
 let print_solutions () : unit Kdo.Symbolic.Choice.t =
-  Logs.app (fun m -> m "\nSolutions are:\n");
+  Logs.app (fun m -> m "\nSolutions are symbol_0, symbol_1 and symbol_2 of the model with the maximal symbol_3; symbol_3 is the number of solutions.\nThere are no solutions if no model is found.\n");
   Kdo.Symbolic.Choice.return ()
 
 let m =
@@ -49,6 +60,8 @@ let m =
       ("print_header", Extern_func (unit ^->. unit, print_header));
       ("prompt", Extern_func (unit ^->. unit, prompt));
       ("print_solutions", Extern_func (unit ^->. unit, print_solutions));
+      ("assume", Extern_func (i32 ^->. unit, assume));
+      ("restrict_x", Extern_func (unit ^->. i32, restrict_x));
     ]
   in
   {
