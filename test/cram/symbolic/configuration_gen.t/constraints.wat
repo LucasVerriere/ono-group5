@@ -270,8 +270,43 @@
     (local.get $result)
   )
 
+  (func $constraint_5 (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+
+    (local.set $result (i32.const 1))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+        (local.set $j (i32.const 0))
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            (local.set $result
+              (i32.and
+                (local.get $result)
+                (i32.eqz (call $is_alive (local.get $i) (local.get $j)))
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
   ;; initialisation de la grille : Seules les 9 cellules du voisinage de (TARGET_I, TARGET_J) sont symboliques
-  (func $grid_init_for_constraints_1_or_2 
+  (func $init_neighbors_as_symbols 
     (local $i i32)
     (local $j i32)
     (local $sym i32)
@@ -292,12 +327,12 @@
   )
 
   (func $init_configuration_for_constraint_1_or_2
-    (call $grid_init_for_constraints_1_or_2)
+    (call $init_neighbors_as_symbols)
 
     (call $step)
   )
 
-  (func $grid_init_for_constraint_3_or_4 
+  (func $init_whole_grid_as_symbols 
     (local $i i32)
     (local $j i32)
     (local $sym i32)
@@ -317,8 +352,8 @@
     ))
   )
 
-  (func $init_configuration_for_constraint_3_or_4
-    (call $grid_init_for_constraint_3_or_4)
+  (func $init_configuration_for_constraint_3_to_5
+    (call $init_whole_grid_as_symbols)
 
     (call $step)
   )
@@ -351,22 +386,29 @@
 
     (if (i32.eq (local.get $constraint_to_calculate) (i32.const 99)) 
       (then 
-        (call $init_configuration_for_constraint_3_or_4)
+        (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_N_alive_cells) (then unreachable))
       )
     )
 
     (if (i32.eq (local.get $constraint_to_calculate) (i32.const 3)) 
       (then 
-        (call $init_configuration_for_constraint_3_or_4)
+        (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_3) (then unreachable))
       )
     )
 
     (if (i32.eq (local.get $constraint_to_calculate) (i32.const 4)) 
       (then 
-        (call $init_configuration_for_constraint_3_or_4)
+        (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_4) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 5)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_5) (then unreachable))
       )
     )
 
