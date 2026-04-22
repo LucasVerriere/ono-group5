@@ -13,9 +13,10 @@
   (global $next_offset    (mut i32) (i32.const 25))
 
   ;; cellule cible
-  (global $TARGET_I i32 (i32.const 2))
-  (global $TARGET_J i32 (i32.const 2))
-  (global $TARGET_J_2 i32 (i32.const 3))
+  (global $TARGET_I i32 (i32.const 1))
+  (global $TARGET_I_2 i32 (i32.const 3))
+  (global $TARGET_J i32 (i32.const 1))
+  (global $TARGET_J_2 i32 (i32.const 2))
 
   (global $NUMBER_OF_ALIVE_CELLS i32 (i32.const 6))
 
@@ -332,6 +333,32 @@
     (local.get $result)
   )
 
+  (func $constraint_7 (result i32)
+    (local $i i32)
+    (local $result i32)
+
+    (local.set $result (i32.const 1))
+    (local.set $i (global.get $TARGET_I))
+
+    (block $exit
+      (loop $loop
+        (br_if $exit (i32.gt_s (local.get $i) (global.get $TARGET_I_2)))
+
+        (local.set $result
+          (i32.and
+            (local.get $result)
+            (call $is_alive (local.get $i) (global.get $TARGET_J))
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $loop)
+      )
+    )
+
+    (local.get $result)
+  )
+
   ;; initialisation de la grille : Seules les 9 cellules du voisinage de (TARGET_I, TARGET_J) sont symboliques
   (func $init_neighbors_as_symbols 
     (local $i i32)
@@ -417,6 +444,36 @@
     (call $step)
   )
 
+  (func $init_full_colomn_as_symbols
+    (local $i i32)
+    (local $j i32)
+    (local $sym i32)
+
+    (local.set $i (i32.sub (global.get $TARGET_I) (i32.const 1)))
+    (block $oi (loop $li
+      (br_if $oi (i32.gt_s (local.get $i) (i32.add (global.get $TARGET_I_2) (i32.const 1))))
+
+      (local.set $j (i32.sub (global.get $TARGET_J) (i32.const 1)))
+      (block $oj (loop $lj
+        (br_if $oj (i32.gt_s (local.get $j) (i32.add (global.get $TARGET_J) (i32.const 1))))
+
+        (local.set $sym (i32.and (call $i32_symbol) (i32.const 1)))
+        (i32.store8 (call $index (local.get $i) (local.get $j)) (local.get $sym))
+
+        (local.set $j (i32.add (local.get $j) (i32.const 1)))
+        (br $lj)
+      ))
+
+      (local.set $i (i32.add (local.get $i) (i32.const 1)))
+      (br $li)
+    ))
+  )
+
+  (func $init_configuration_for_full_column
+    (call $init_full_colomn_as_symbols)
+    (call $step)
+  )
+
   (func $print_initial_grid
     (call $swap_buffers)
     (call $print_i32 (global.get $w))
@@ -475,6 +532,13 @@
       (then 
         (call $init_configuration_for_full_line)
         (if (call $constraint_6) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 7)) 
+      (then 
+        (call $init_configuration_for_full_column)
+        (if (call $constraint_7) (then unreachable))
       )
     )
 
