@@ -359,6 +359,26 @@
     (local.get $result)
   )
 
+  ;; max(val, min_bound)
+  (func $clamp_min (param $val i32) (param $min_bound i32) (result i32)
+
+    ;; if sur des valeurs qui ne sont pas symbolique, donc pas de problème de performance
+    (if (result i32) (i32.lt_s (local.get $val) (local.get $min_bound))
+      (then (local.get $min_bound))
+      (else (local.get $val))
+    )
+  )
+
+  ;; min(val, max_bound)
+  (func $clamp_max (param $val i32) (param $max_bound i32) (result i32)
+
+    ;; if sur des valeurs qui ne sont pas symbolique, donc pas de problème de performance 
+    (if (result i32) (i32.gt_s (local.get $val) (local.get $max_bound))
+      (then (local.get $max_bound))
+      (else (local.get $val))
+    )
+  )
+
   ;; symbolise toutes les cellules du rectangle [i_min, i_max] x [j_min, j_max]
   (func $init_rectangle_as_symbols 
     (param $i_min i32) (param $i_max i32)
@@ -366,6 +386,12 @@
     (local $i i32)
     (local $j i32)
     (local $sym i32)
+
+    ;; pour rester dans les bornes de la grille
+    (local.set $i_min (call $clamp_min (local.get $i_min) (i32.const 0)))
+    (local.set $i_max (call $clamp_max (local.get $i_max) (i32.sub (global.get $h) (i32.const 1))))
+    (local.set $j_min (call $clamp_min (local.get $j_min) (i32.const 0)))
+    (local.set $j_max (call $clamp_max (local.get $j_max) (i32.sub (global.get $w) (i32.const 1))))
 
     (local.set $i (local.get $i_min))
     (block $oi (loop $li
