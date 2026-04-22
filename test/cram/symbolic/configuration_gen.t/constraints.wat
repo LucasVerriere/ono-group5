@@ -359,25 +359,41 @@
     (local.get $result)
   )
 
-  ;; initialisation de la grille : Seules les 9 cellules du voisinage de (TARGET_I, TARGET_J) sont symboliques
-  (func $init_neighbors_as_symbols 
+  ;; symbolise toutes les cellules du rectangle [i_min, i_max] x [j_min, j_max]
+  (func $init_rectangle_as_symbols 
+    (param $i_min i32) (param $i_max i32)
+    (param $j_min i32) (param $j_max i32)
     (local $i i32)
     (local $j i32)
     (local $sym i32)
-    (local.set $i (i32.sub (global.get $TARGET_I) (i32.const 1)))
+
+    (local.set $i (local.get $i_min))
     (block $oi (loop $li
-      (br_if $oi (i32.gt_s (local.get $i) (i32.add (global.get $TARGET_I) (i32.const 1))))
-      (local.set $j (i32.sub (global.get $TARGET_J) (i32.const 1)))
+      (br_if $oi (i32.gt_s (local.get $i) (local.get $i_max)))
+
+      (local.set $j (local.get $j_min))
       (block $oj (loop $lj
-        (br_if $oj (i32.gt_s (local.get $j) (i32.add (global.get $TARGET_J) (i32.const 1))))
+        (br_if $oj (i32.gt_s (local.get $j) (local.get $j_max)))
+
         (local.set $sym (i32.and (call $i32_symbol) (i32.const 1)))
         (i32.store8 (call $index (local.get $i) (local.get $j)) (local.get $sym))
+
         (local.set $j (i32.add (local.get $j) (i32.const 1)))
         (br $lj)
       ))
+
       (local.set $i (i32.add (local.get $i) (i32.const 1)))
       (br $li)
     ))
+  )
+
+  (func $init_neighbors_as_symbols
+    (call $init_rectangle_as_symbols
+      (i32.sub (global.get $TARGET_I) (i32.const 1))
+      (i32.add (global.get $TARGET_I) (i32.const 1))
+      (i32.sub (global.get $TARGET_J) (i32.const 1))
+      (i32.add (global.get $TARGET_J) (i32.const 1))
+    )
   )
 
   (func $init_configuration_for_constraint_1_or_2
@@ -386,24 +402,13 @@
     (call $step)
   )
 
-  (func $init_whole_grid_as_symbols 
-    (local $i i32)
-    (local $j i32)
-    (local $sym i32)
-    (local.set $i (i32.const 0))
-    (block $oi (loop $li
-      (br_if $oi (i32.gt_s (local.get $i) (i32.sub (global.get $h) (i32.const 1))))
-      (local.set $j (i32.const 0))
-      (block $oj (loop $lj
-        (br_if $oj (i32.gt_s (local.get $j) (i32.sub (global.get $w) (i32.const 1))))
-        (local.set $sym (i32.and (call $i32_symbol) (i32.const 1)))
-        (i32.store8 (call $index (local.get $i) (local.get $j)) (local.get $sym))
-        (local.set $j (i32.add (local.get $j) (i32.const 1)))
-        (br $lj)
-      ))
-      (local.set $i (i32.add (local.get $i) (i32.const 1)))
-      (br $li)
-    ))
+  (func $init_whole_grid_as_symbols
+    (call $init_rectangle_as_symbols
+      (i32.const 0)
+      (i32.sub (global.get $h) (i32.const 1))
+      (i32.const 0)
+      (i32.sub (global.get $w) (i32.const 1))
+    )
   )
 
   (func $init_configuration_for_constraint_3_to_5
@@ -414,29 +419,12 @@
 
   ;; initialisation de la grille : seules le rectangle [TARGET_I-1, TARGET_I+1] x [TARGET_J-1, TARGET_J_2+1] est symbolique
   (func $init_full_line_as_symbols
-    (local $i i32)
-    (local $j i32)
-    (local $sym i32)
-
-    (local.set $i (i32.sub (global.get $TARGET_I) (i32.const 1)))
-    (block $oi (loop $li
-      (br_if $oi (i32.gt_s (local.get $i) (i32.add (global.get $TARGET_I) (i32.const 1))))
-
-      (local.set $j (i32.sub (global.get $TARGET_J) (i32.const 1)))
-      (block $oj (loop $lj
-        (br_if $oj (i32.gt_s (local.get $j) (i32.add (global.get $TARGET_J_2) (i32.const 1))))
-
-        ;; ne sortir de la grille : on pourrait ajouter un check ici si la ligne touche un bord
-        (local.set $sym (i32.and (call $i32_symbol) (i32.const 1)))
-        (i32.store8 (call $index (local.get $i) (local.get $j)) (local.get $sym))
-
-        (local.set $j (i32.add (local.get $j) (i32.const 1)))
-        (br $lj)
-      ))
-
-      (local.set $i (i32.add (local.get $i) (i32.const 1)))
-      (br $li)
-    ))
+    (call $init_rectangle_as_symbols
+      (i32.sub (global.get $TARGET_I)   (i32.const 1))
+      (i32.add (global.get $TARGET_I)   (i32.const 1))
+      (i32.sub (global.get $TARGET_J)   (i32.const 1))
+      (i32.add (global.get $TARGET_J_2) (i32.const 1))
+    )
   )
 
   (func $init_configuration_for_full_line
@@ -444,33 +432,17 @@
     (call $step)
   )
 
-  (func $init_full_colomn_as_symbols
-    (local $i i32)
-    (local $j i32)
-    (local $sym i32)
-
-    (local.set $i (i32.sub (global.get $TARGET_I) (i32.const 1)))
-    (block $oi (loop $li
-      (br_if $oi (i32.gt_s (local.get $i) (i32.add (global.get $TARGET_I_2) (i32.const 1))))
-
-      (local.set $j (i32.sub (global.get $TARGET_J) (i32.const 1)))
-      (block $oj (loop $lj
-        (br_if $oj (i32.gt_s (local.get $j) (i32.add (global.get $TARGET_J) (i32.const 1))))
-
-        (local.set $sym (i32.and (call $i32_symbol) (i32.const 1)))
-        (i32.store8 (call $index (local.get $i) (local.get $j)) (local.get $sym))
-
-        (local.set $j (i32.add (local.get $j) (i32.const 1)))
-        (br $lj)
-      ))
-
-      (local.set $i (i32.add (local.get $i) (i32.const 1)))
-      (br $li)
-    ))
+  (func $init_full_column_as_symbols
+    (call $init_rectangle_as_symbols
+      (i32.sub (global.get $TARGET_I)   (i32.const 1))
+      (i32.add (global.get $TARGET_I_2) (i32.const 1))
+      (i32.sub (global.get $TARGET_J)   (i32.const 1))
+      (i32.add (global.get $TARGET_J)   (i32.const 1))
+    )
   )
 
   (func $init_configuration_for_full_column
-    (call $init_full_colomn_as_symbols)
+    (call $init_full_column_as_symbols)
     (call $step)
   )
 
