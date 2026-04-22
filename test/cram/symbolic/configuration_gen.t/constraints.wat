@@ -162,46 +162,6 @@
     (i32.eqz (call $is_alive (global.get $TARGET_I) (global.get $TARGET_J)))
   )
 
-  ;; Au tour suivant, il y a exactement $NUMBER_OF_ALIVE_CELLS cellules vivantes 
-  (func $constraint_N_alive_cells (result i32)
-    (local $count i32)
-    (local $i i32)
-    (local $j i32)
-
-    (local.set $count (i32.const 0))
-    (local.set $i (i32.const 0))
-
-    (block $oi
-      (loop $li
-        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
-
-        (local.set $j (i32.const 0))
-
-        (block $oj
-          (loop $lj
-            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
-
-            ;; if (is_alive(i, j)) count++
-            (local.set $count
-              (i32.add
-                (local.get $count)
-                (call $is_alive (local.get $i) (local.get $j))
-              )
-            )
-
-            (local.set $j (i32.add (local.get $j) (i32.const 1)))
-            (br $lj)
-          )
-        )
-
-        (local.set $i (i32.add (local.get $i) (i32.const 1)))
-        (br $li)
-      )
-    )
-
-    (i32.eq (local.get $count) (global.get $NUMBER_OF_ALIVE_CELLS))
-  )
-
   (func $constraint_3 (result i32)
     (local $i i32)
     (local $j i32)
@@ -359,6 +319,45 @@
     (local.get $result)
   )
 
+  (func $constraint_8 (result i32)
+    (local $count i32)
+    (local $i i32)
+    (local $j i32)
+
+    (local.set $count (i32.const 0))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            ;; if (is_alive(i, j)) count++
+            (local.set $count
+              (i32.add
+                (local.get $count)
+                (call $is_alive (local.get $i) (local.get $j))
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (i32.eq (local.get $count) (global.get $NUMBER_OF_ALIVE_CELLS))
+  )
+
   ;; max(val, min_bound)
   (func $clamp_min (param $val i32) (param $min_bound i32) (result i32)
 
@@ -498,13 +497,6 @@
       )
     )
 
-    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 99)) 
-      (then 
-        (call $init_configuration_for_constraint_3_to_5)
-        (if (call $constraint_N_alive_cells) (then unreachable))
-      )
-    )
-
     (if (i32.eq (local.get $constraint_to_calculate) (i32.const 3)) 
       (then 
         (call $init_configuration_for_constraint_3_to_5)
@@ -537,6 +529,13 @@
       (then 
         (call $init_configuration_for_full_column)
         (if (call $constraint_7) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 8)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_8) (then unreachable))
       )
     )
 
