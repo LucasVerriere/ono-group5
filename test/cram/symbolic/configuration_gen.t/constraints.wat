@@ -13,10 +13,10 @@
   (global $next_offset    (mut i32) (i32.const 25))
 
   ;; cellule cible
-  (global $TARGET_I i32 (i32.const 1))
+  (global $TARGET_I i32 (i32.const 0))
   (global $TARGET_I_2 i32 (i32.const 3))
-  (global $TARGET_J i32 (i32.const 1))
-  (global $TARGET_J_2 i32 (i32.const 2))
+  (global $TARGET_J i32 (i32.const 0))
+  (global $TARGET_J_2 i32 (i32.const 4))
 
   (global $NUMBER_OF_ALIVE_CELLS i32 (i32.const 6))
 
@@ -358,6 +358,207 @@
     (i32.eq (local.get $count) (global.get $NUMBER_OF_ALIVE_CELLS))
   )
 
+  (func $constraint_9 (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+    (local $is_isolated i32)
+
+    (local.set $result (i32.const 0))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            (local.set $is_isolated
+              (i32.and
+                (call $is_alive (local.get $i) (local.get $j))
+                (i32.eqz (call $count_alive_neighbours (local.get $i) (local.get $j)))
+              )
+            )
+
+            (local.set $result
+              ;; "il existe au moins une cellule", donc OR logique
+              (i32.or
+                (local.get $result)
+                (local.get $is_isolated)
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
+  (func $constraint_10 (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+    (local $is_surrounded i32)
+
+    (local.set $result (i32.const 0))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            (local.set $is_surrounded
+              (i32.eq
+                (call $count_alive_neighbours (local.get $i) (local.get $j))
+                (i32.const 8)
+              )
+            )
+
+            (local.set $result
+              (i32.or
+                (local.get $result)
+                (local.get $is_surrounded)
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
+  (func $constraint_11 (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+    (local $alive i32)
+
+    (local.set $result (i32.const 0))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            (local.set $alive (call $is_alive (local.get $i) (local.get $j)))
+
+            ;; paire horizontale
+            (local.set $result
+              (i32.or
+                (local.get $result)
+                (i32.and
+                  (local.get $alive)
+                  (call $is_alive (local.get $i) (i32.add (local.get $j) (i32.const 1)))
+                )
+              )
+            )
+
+            ;; paire verticale
+            (local.set $result
+              (i32.or
+                (local.get $result)
+                (i32.and
+                  (local.get $alive)
+                  (call $is_alive (i32.add (local.get $i) (i32.const 1)) (local.get $j))
+                )
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
+  (func $constraint_12 (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+    (local $concerned_cells i32)
+
+    (local.set $result (i32.const 0))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            (local.set $concerned_cells
+              (i32.add
+                (i32.add
+                  (call $is_alive (local.get $i) (local.get $j))
+                  (call $is_alive (local.get $i) (i32.add (local.get $j) (i32.const 1)))
+                )
+                (i32.add
+                  (call $is_alive (i32.add (local.get $i) (i32.const 1)) (local.get $j))
+                  (call $is_alive (i32.add (local.get $i) (i32.const 1)) (i32.add (local.get $j) (i32.const 1)))
+                )
+              )
+            )
+
+            (local.set $result
+              (i32.or
+                (local.get $result)
+                (i32.eq (local.get $concerned_cells) (i32.const 3))
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
   ;; max(val, min_bound)
   (func $clamp_min (param $val i32) (param $min_bound i32) (result i32)
 
@@ -536,6 +737,34 @@
       (then 
         (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_8) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 9)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_9) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 10)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_10) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 11)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_11) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 12)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_12) (then unreachable))
       )
     )
 
