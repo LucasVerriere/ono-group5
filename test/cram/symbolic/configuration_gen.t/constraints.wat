@@ -153,6 +153,116 @@
 
   ;; ==============================================================================
 
+  ;; ============================= UTILITY FUNCTIONS ==============================
+
+  ;; lit l'état précédent à la position (i, j)
+  (func $was_alive (param $i i32) (param $j i32) (result i32)
+    (i32.load8_u
+      (i32.add
+        (global.get $next_offset)
+        (i32.add
+          (i32.mul (local.get $i) (global.get $w))
+          (local.get $j)
+        )
+      )
+    )
+  )
+
+  ;; retourne 1 s'il existe au moins une ligne complètement alternée, 0 sinon
+  (func $exists_alternating_line (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+    (local $line_alt i32)
+
+    (local.set $result (i32.const 0))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $line_alt (i32.const 1))
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (i32.sub (global.get $w) (i32.const 1))))
+
+            (local.set $line_alt
+              (i32.and
+                (local.get $line_alt)
+
+                ;; cell(i, j) != cell(i, j+1)
+                (i32.ne
+                  (call $is_alive (local.get $i) (local.get $j))
+                  (call $is_alive (local.get $i) (i32.add (local.get $j) (i32.const 1)))
+                )
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $result (i32.or (local.get $result) (local.get $line_alt)))
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
+  ;; retourne 1 s'il existe au moins une colonne complètement alternée, 0 sinon
+  (func $exists_alternating_column (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+    (local $col_alt i32)
+
+    (local.set $result (i32.const 0))
+    (local.set $j (i32.const 0))
+
+    (block $oj
+      (loop $lj
+        (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+        (local.set $col_alt (i32.const 1))
+        (local.set $i (i32.const 0))
+
+        (block $oi
+          (loop $li
+            (br_if $oi (i32.ge_s (local.get $i) (i32.sub (global.get $h) (i32.const 1))))
+
+            (local.set $col_alt
+              (i32.and
+                (local.get $col_alt)
+
+                ;; cell(i, j) != cell(i+1, j)
+                (i32.ne
+                  (call $is_alive (local.get $i) (local.get $j))
+                  (call $is_alive (i32.add (local.get $i) (i32.const 1)) (local.get $j))
+                )
+              )
+            )
+
+            (local.set $i (i32.add (local.get $i) (i32.const 1)))
+            (br $li)
+          )
+        )
+
+        (local.set $result (i32.or (local.get $result) (local.get $col_alt)))
+        (local.set $j (i32.add (local.get $j) (i32.const 1)))
+        (br $lj)
+      )
+    )
+
+    (local.get $result)
+  )
+
+  ;; ==============================================================================
 
   (func $constraint_1 (result i32)
     (call $is_alive (global.get $TARGET_I) (global.get $TARGET_J))
@@ -559,6 +669,112 @@
     (local.get $result)
   )
 
+  (func $constraint_13 (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+    (local $concerned_cells i32)
+
+    (local.set $result (i32.const 0))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            (local.set $concerned_cells
+              (i32.add
+                (i32.add
+                  (call $is_alive (local.get $i) (local.get $j))
+                  (call $is_alive (local.get $i) (i32.add (local.get $j) (i32.const 1)))
+                )
+                (i32.add
+                  (call $is_alive (i32.add (local.get $i) (i32.const 1)) (local.get $j))
+                  (call $is_alive (i32.add (local.get $i) (i32.const 1)) (i32.add (local.get $j) (i32.const 1)))
+                )
+              )
+            )
+
+            (local.set $result
+              (i32.or
+                (local.get $result)
+                (i32.eq (local.get $concerned_cells) (i32.const 4))
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
+  (func $constraint_14 (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+    (local $born i32)
+
+    (local.set $result (i32.const 0))   ;; neutre du OR
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            ;; born = (was dead AND is alive) = (NOT was_alive) AND is_alive
+            (local.set $born
+              (i32.and
+                (i32.eqz (call $was_alive (local.get $i) (local.get $j)))
+                (call $is_alive (local.get $i) (local.get $j))
+              )
+            )
+
+            (local.set $result
+              (i32.or
+                (local.get $result)
+                (local.get $born)
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
+  (func $constraint_15 (result i32)
+    (i32.or
+      (call $exists_alternating_line)
+      (call $exists_alternating_column)
+    )
+  )
+
   ;; max(val, min_bound)
   (func $clamp_min (param $val i32) (param $min_bound i32) (result i32)
 
@@ -765,6 +981,27 @@
       (then 
         (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_12) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 13)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_13) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 14)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_14) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 15)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_15) (then unreachable))
       )
     )
 
