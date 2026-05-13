@@ -20,6 +20,8 @@
 
   (global $NUMBER_OF_ALIVE_CELLS i32 (i32.const 6))
 
+  (global $DIAGONAL_LENGTH i32 (i32.const 4))
+
   ;; ========================== GAME OF LIFE ======================================
 
   (func $index (param $i i32) (param $j i32) (result i32)
@@ -308,6 +310,66 @@
         )
       )
     )
+  )
+
+  ;; Vrai si une diagonale descendante de longueur N part de (i, j)
+  (func $is_diagonal_down_at (param $i i32) (param $j i32) (result i32)
+    (local $k i32)
+    (local $result i32)
+
+    (local.set $result (i32.const 1))
+    (local.set $k (i32.const 0))
+
+    (block $oexit
+      (loop $loop
+        (br_if $oexit (i32.ge_s (local.get $k) (global.get $DIAGONAL_LENGTH)))
+
+        (local.set $result
+          (i32.and
+            (local.get $result)
+            (call $is_alive
+              (i32.add (local.get $i) (local.get $k))
+              (i32.add (local.get $j) (local.get $k))
+            )
+          )
+        )
+
+        (local.set $k (i32.add (local.get $k) (i32.const 1)))
+        (br $loop)
+      )
+    )
+
+    (local.get $result)
+  )
+
+  ;; Vrai si une diagonale montante de longueur N part de (i, j)
+  (func $is_diagonal_up_at (param $i i32) (param $j i32) (result i32)
+    (local $k i32)
+    (local $result i32)
+
+    (local.set $result (i32.const 1))
+    (local.set $k (i32.const 0))
+
+    (block $oexit
+      (loop $loop
+        (br_if $oexit (i32.ge_s (local.get $k) (global.get $DIAGONAL_LENGTH)))
+
+        (local.set $result
+          (i32.and
+            (local.get $result)
+            (call $is_alive
+              (i32.sub (local.get $i) (local.get $k))
+              (i32.add (local.get $j) (local.get $k))
+            )
+          )
+        )
+
+        (local.set $k (i32.add (local.get $k) (i32.const 1)))
+        (br $loop)
+      )
+    )
+
+    (local.get $result)
   )
 
   ;; ==============================================================================
@@ -864,6 +926,48 @@
     (local.get $result)
   )
 
+
+  (func $constraint_17 (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+
+    (local.set $result (i32.const 0))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            (local.set $result
+              (i32.or
+                (local.get $result)
+                (i32.or
+                  (call $is_diagonal_down_at (local.get $i) (local.get $j))
+                  (call $is_diagonal_up_at (local.get $i) (local.get $j))
+                )
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
   ;; max(val, min_bound)
   (func $clamp_min (param $val i32) (param $min_bound i32) (result i32)
 
@@ -1098,6 +1202,13 @@
       (then 
         (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_16) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 17)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_17) (then unreachable))
       )
     )
 
