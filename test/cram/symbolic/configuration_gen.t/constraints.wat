@@ -3,6 +3,7 @@
   (func $i32_symbol (import "ono" "i32_symbol") (result i32))
   (func $print_i32  (import "ono" "print_i32")  (param i32))
   (func $read_i32 (import "ono" "read_i32") (result i32))
+  (func $print_prompt (import "ono" "print_prompt"))
 
   (memory (export "memory") 1)
 
@@ -20,7 +21,7 @@
 
   (global $NUMBER_OF_ALIVE_CELLS i32 (i32.const 6))
 
-  (global $DIAGONAL_LENGTH i32 (i32.const 4))
+  (global $DIAGONAL_LENGTH i32 (i32.const 6))
 
   ;; ========================== GAME OF LIFE ======================================
 
@@ -1091,6 +1092,7 @@
   (func $main
 
     (local $constraint_to_calculate i32)
+    (call $print_prompt)
     (local.set $constraint_to_calculate (call $read_i32))
 
     (if (i32.eq (local.get $constraint_to_calculate) (i32.const 1)) 

@@ -2,7 +2,37 @@
 <!DOCTYPE testcase PUBLIC "+//IDN sosy-lab.org//DTD test-format testcase 1.1//EN" "https://sosy-lab.org/test-format/testcase-1.1.dtd">
 <testcase coversError="true">
   <input>
-    1
+    0
+  </input>
+  <input>
+    0
+  </input>
+  <input>
+    0
+  </input>
+  <input>
+    0
+  </input>
+  <input>
+    0
+  </input>
+  <input>
+    0
+  </input>
+  <input>
+    0
+  </input>
+  <input>
+    0
+  </input>
+  <input>
+    0
+  </input>
+  <input>
+    0
+  </input>
+  <input>
+    0
   </input>
   <input>
     1
@@ -17,25 +47,10 @@
     0
   </input>
   <input>
-    1
-  </input>
-  <input>
-    1
-  </input>
-  <input>
-    1
-  </input>
-  <input>
     0
   </input>
   <input>
-    1
-  </input>
-  <input>
     0
-  </input>
-  <input>
-    1
   </input>
   <input>
     0
@@ -44,28 +59,13 @@
     0
   </input>
   <input>
-    1
-  </input>
-  <input>
-    1
-  </input>
-  <input>
     0
   </input>
   <input>
     0
   </input>
   <input>
-    1
-  </input>
-  <input>
-    1
-  </input>
-  <input>
     0
-  </input>
-  <input>
-    1
   </input>
   <input>
     0
