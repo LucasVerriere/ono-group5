@@ -262,6 +262,54 @@
     (local.get $result)
   )
 
+  ;; Vrai si un blinker horizontal est centré en (i, j)
+  ;; Motif : (i, j-1), (i, j), (i, j+1) vivantes, le reste autour mort
+  (func $is_horizontal_blinker_at (param $i i32) (param $j i32) (result i32)
+    (i32.and
+      (i32.and
+        (call $is_alive (local.get $i) (i32.sub (local.get $j) (i32.const 1)))
+        (i32.and
+          (call $is_alive (local.get $i) (local.get $j))
+          (call $is_alive (local.get $i) (i32.add (local.get $j) (i32.const 1)))
+        )
+      )
+
+      (i32.and
+        (i32.eq
+          (call $count_alive_neighbours (local.get $i) (i32.sub (local.get $j) (i32.const 1)))
+          (i32.const 1)
+        )
+        (i32.eq
+          (call $count_alive_neighbours (local.get $i) (i32.add (local.get $j) (i32.const 1)))
+          (i32.const 1)
+        )
+      )
+    )
+  )
+
+  ;; Vrai si un blinker vertical est centré en (i, j)
+  (func $is_vertical_blinker_at (param $i i32) (param $j i32) (result i32)
+    (i32.and
+      (i32.and
+        (call $is_alive (i32.sub (local.get $i) (i32.const 1)) (local.get $j))
+        (i32.and
+          (call $is_alive (local.get $i) (local.get $j))
+          (call $is_alive (i32.add (local.get $i) (i32.const 1)) (local.get $j))
+        )
+      )
+      (i32.and
+        (i32.eq
+          (call $count_alive_neighbours (i32.sub (local.get $i) (i32.const 1)) (local.get $j))
+          (i32.const 1)
+        )
+        (i32.eq
+          (call $count_alive_neighbours (i32.add (local.get $i) (i32.const 1)) (local.get $j))
+          (i32.const 1)
+        )
+      )
+    )
+  )
+
   ;; ==============================================================================
 
   (func $constraint_1 (result i32)
@@ -775,6 +823,47 @@
     )
   )
 
+  (func $constraint_16 (result i32)
+    (local $i i32)
+    (local $j i32)
+    (local $result i32)
+
+    (local.set $result (i32.const 0))
+    (local.set $i (i32.const 0))
+
+    (block $oi
+      (loop $li
+        (br_if $oi (i32.ge_s (local.get $i) (global.get $h)))
+
+        (local.set $j (i32.const 0))
+
+        (block $oj
+          (loop $lj
+            (br_if $oj (i32.ge_s (local.get $j) (global.get $w)))
+
+            (local.set $result
+              (i32.or
+                (local.get $result)
+                (i32.or
+                  (call $is_horizontal_blinker_at (local.get $i) (local.get $j))
+                  (call $is_vertical_blinker_at (local.get $i) (local.get $j))
+                )
+              )
+            )
+
+            (local.set $j (i32.add (local.get $j) (i32.const 1)))
+            (br $lj)
+          )
+        )
+
+        (local.set $i (i32.add (local.get $i) (i32.const 1)))
+        (br $li)
+      )
+    )
+
+    (local.get $result)
+  )
+
   ;; max(val, min_bound)
   (func $clamp_min (param $val i32) (param $min_bound i32) (result i32)
 
@@ -1002,6 +1091,13 @@
       (then 
         (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_15) (then unreachable))
+      )
+    )
+
+    (if (i32.eq (local.get $constraint_to_calculate) (i32.const 16)) 
+      (then 
+        (call $init_configuration_for_constraint_3_to_5)
+        (if (call $constraint_16) (then unreachable))
       )
     )
 
