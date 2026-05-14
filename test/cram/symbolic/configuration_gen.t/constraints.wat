@@ -7,17 +7,17 @@
 
   (memory (export "memory") 1)
 
-  (global $w              (mut i32) (i32.const 5))
-  (global $h              (mut i32) (i32.const 5))
-  (global $size           (mut i32) (i32.const 25))
+  (global $w              (mut i32) (i32.const 8))
+  (global $h              (mut i32) (i32.const 8))
+  (global $size           (mut i32) (i32.const 64))
   (global $current_offset (mut i32) (i32.const 0))
-  (global $next_offset    (mut i32) (i32.const 25))
+  (global $next_offset    (mut i32) (i32.const 64))
 
   ;; cellule cible
-  (global $TARGET_I i32 (i32.const 0))
-  (global $TARGET_I_2 i32 (i32.const 3))
-  (global $TARGET_J i32 (i32.const 0))
-  (global $TARGET_J_2 i32 (i32.const 4))
+  (global $TARGET_I i32 (i32.const 1))
+  (global $TARGET_I_2 i32 (i32.const 4))
+  (global $TARGET_J i32 (i32.const 4))
+  (global $TARGET_J_2 i32 (i32.const 7))
 
   (global $NUMBER_OF_ALIVE_CELLS i32 (i32.const 6))
 
@@ -1097,14 +1097,14 @@
 
     (if (i32.eq (local.get $constraint_to_calculate) (i32.const 1)) 
       (then 
-        (call $init_configuration_for_constraint_1_or_2)
+        (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_1) (then unreachable))
       )
     )
         
     (if (i32.eq (local.get $constraint_to_calculate) (i32.const 2)) 
       (then 
-        (call $init_configuration_for_constraint_1_or_2)
+        (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_2) (then unreachable))
       )
     )
@@ -1132,14 +1132,14 @@
 
     (if (i32.eq (local.get $constraint_to_calculate) (i32.const 6)) 
       (then 
-        (call $init_configuration_for_full_line)
+        (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_6) (then unreachable))
       )
     )
 
     (if (i32.eq (local.get $constraint_to_calculate) (i32.const 7)) 
       (then 
-        (call $init_configuration_for_full_column)
+        (call $init_configuration_for_constraint_3_to_5)
         (if (call $constraint_7) (then unreachable))
       )
     )
