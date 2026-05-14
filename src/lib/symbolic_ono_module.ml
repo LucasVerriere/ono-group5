@@ -12,6 +12,10 @@ let read_i32 () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
   let value = read_int () in
   Kdo.Symbolic.Choice.return (Kdo.Symbolic.I32.of_int value)
 
+let print_prompt () : unit Kdo.Symbolic.Choice.t =
+  print_string "Entrez le numéro de la contrainte : ";
+  Kdo.Symbolic.Choice.return ()
+
 let m =
   let open Kdo.Symbolic.Extern_func in
   let open Kdo.Symbolic.Extern_func.Syntax in
@@ -20,6 +24,7 @@ let m =
       ("print_i32", Extern_func (i32 ^->. unit, print_i32));
       ("i32_symbol", Extern_func (unit ^->. i32, i32_symbol));
       ("read_i32", Extern_func (unit ^->. i32, read_i32));
+      ("print_prompt", Extern_func (unit ^->. unit, print_prompt));
     ]
   in
   {
