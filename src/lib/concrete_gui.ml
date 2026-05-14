@@ -44,11 +44,12 @@ let draw_cells ()=
       ) row_content ) data.grid
 
 let render ()=
-  begin_drawing ();
-  clear_background Color.raywhite;
-  draw_grid ();
-  draw_cells ();
-  end_drawing ();
+  if data.initialised then 
+    (begin_drawing ();
+    clear_background Color.raywhite;
+    draw_grid ();
+    draw_cells ();
+    end_drawing ());
   Ok()
 
 let w_should_close () =

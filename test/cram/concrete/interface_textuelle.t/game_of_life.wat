@@ -10,17 +10,19 @@
   (import "ono" "config_next_cell" (func $config_next_cell (result i32)))
   (import "ono" "print_cell" (func $print_cell (param i32) (param i32) (param i32)))
   (import "ono" "render" (func $render))
+  (import "ono" "config_get_w" (func $config_get_w (result i32)))
+  (import "ono" "config_get_h" (func $config_get_h (result i32)))
 
 
   ;; ===== Mémoire =====
   (memory (export "memory") 1)
 
   ;; ===== Dimensions et offsets =====
-  (global $w              i32       (i32.const 10))
-  (global $h              i32       (i32.const 10))
-  (global $size           i32       (i32.const 4500))   ;; w * h
+  (global $w              (mut i32)       (i32.const 20))
+  (global $h              (mut i32)       (i32.const 20))
+  (global $size           (mut i32)       (i32.const 400))   ;; w * h
   (global $current_offset (mut i32) (i32.const 0))
-  (global $next_offset    (mut i32) (i32.const 4500))
+  (global $next_offset    (mut i32) (i32.const 400))
 
   ;; ===== index(i, j) = current_offset + i * w + j =====
   (func $index (param $i i32) (param $j i32) (result i32)
@@ -222,6 +224,10 @@
     (local $i i32)
     (local $j i32)
     (local.set $i (i32.const 0))
+    (global.set $w (call $config_get_w))
+    (global.set $h (call $config_get_h))
+    (global.set $size (i32.mul (global.get $w) (global.get $h)))
+    (global.set $next_offset (i32.mul (global.get $w) (global.get $h)))
     (block $outer_exit
       (loop $outer
         (br_if $outer_exit (i32.ge_s (local.get $i) (global.get $h)))

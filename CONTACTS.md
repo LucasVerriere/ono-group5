@@ -7,3 +7,4 @@
 | Verriere-Aboud | Lucas    | [lucas.verriere-aboud@etu.u-paris.fr](mailto:lucas.verriere-aboud@etu.u-paris.fr) |
 | Bas            | Loussine | [loussine.bas@etu.u-paris.fr](mailto:loussine.bas@etu.u-paris.fr) |
 | Makani Mbelolo | Belbeni  | [belbeni-reille-kani.makani-mbelolo@etu.u-paris.fr](mailto:belbeni-reille-kani.makani-mbelolo@etu.u-paris.fr) |
+| NANMEDIGOU | Yendoumban | [yendoumban.nanmedigou@etu.u-paris.fr](mailto:yendoumban.nanmedigou@etu.u-paris.fr) |
