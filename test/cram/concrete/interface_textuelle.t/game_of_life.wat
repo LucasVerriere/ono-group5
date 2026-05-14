@@ -2,13 +2,14 @@
 
   ;; ===== Imports depuis le module OCaml "ono" =====
   (import "ono" "random_i32"   (func $random_i32 (result i32)))
-  (import "ono" "print_cell"   (func $print_cell (param i32)))
   (import "ono" "newline"      (func $newline))
   (import "ono" "clear_screen" (func $clear_screen))
   (import "ono" "sleep"        (func $sleep))
   (import "ono" "get_steps" (func $get_steps (result i32)))
   (import "ono" "has_config_file"  (func $has_config_file  (result i32)))
   (import "ono" "config_next_cell" (func $config_next_cell (result i32)))
+  (import "ono" "print_cell" (func $print_cell (param i32) (param i32) (param i32)))
+  (import "ono" "render" (func $render))
 
 
   ;; ===== Mémoire =====
@@ -186,7 +187,6 @@
     )
   )
 
-  ;; ===== Affichage de la grille =====
   (func $print_grid
     (local $i i32)
     (local $j i32)
@@ -201,9 +201,7 @@
           (loop $inner
             (br_if $inner_exit (i32.ge_s (local.get $j) (global.get $w)))
 
-            (call $print_cell
-              (i32.load8_u (call $index (local.get $i) (local.get $j)))
-            )
+            (call $print_cell (call $is_alive (local.get $i) (local.get $j)) (local.get $i) (local.get $j))
 
             (local.set $j (i32.add (local.get $j) (i32.const 1)))
             (br $inner)
@@ -216,6 +214,7 @@
       )
     )
 
+    (call $render)
     (call $clear_screen)
   )
 

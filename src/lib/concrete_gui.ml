@@ -48,7 +48,8 @@ let render ()=
   clear_background Color.raywhite;
   draw_grid ();
   draw_cells ();
-  end_drawing ()
+  end_drawing ();
+  Ok()
 
 let w_should_close () =
   data.initialised && window_should_close ()

@@ -20,10 +20,11 @@ let term =
   and+ config_file = config_file 
   and+ steps = steps 
   and+ use_graphical_window = use_graphical_window
-  and+ sleep = sleep_duration_ms in
+  and+ sleep = sleep_duration in
 
     Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> Int.max_int);
-    (match sleep with Some ms -> Ono.Concrete_ono_module.set_sleep_duration_ms ms | None -> ());
+    Ono.Concrete_ono_module.use_graphical_window := (if use_graphical_window then 1 else 0);
+    (match sleep with Some t -> Ono.Concrete_ono_module.set_sleep_duration t | None -> ());
     (* Charger le fichier de config si fourni *)
     (match seed with Some s -> Random.init s | None -> Random.self_init ());
     (match config_file with
@@ -31,10 +32,9 @@ let term =
     | None -> ());
     if use_graphical_window then (
         Ono.Concrete_gui.init ~nb_rows:!(Ono.Concrete_ono_module.config_h) ~nb_cols:!(Ono.Concrete_ono_module.config_w); 
-        while not (Ono.Concrete_gui.w_should_close ()) do
-          Ono.Concrete_gui.render ()
-        done;
-        Ono.Concrete_gui.close ();
+        (Ono.Concrete_driver.run ~source_file |> function
+        | Ok () -> ()
+        | Error _ -> ());
         Ok()
     )else(
         Ono.Concrete_driver.run ~source_file |> function

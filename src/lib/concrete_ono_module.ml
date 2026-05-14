@@ -16,39 +16,19 @@ let print_i64 (n : Kdo.Concrete.I64.t) : (unit, _) Result.t =
 
 (* Nouvelles fonctions pour le jeu de la Vie *)
 
-let print_cell (cell : Kdo.Concrete.I32.t) : (unit, _) Result.t =
-  let cell_int = Kdo.Concrete.I32.to_int cell in
-  let symbol = if cell_int <> 0 then "X" else " " in
-  Buffer.add_string display_buffer symbol;
-  Ok ()
-
 let newline () : (unit, _) Result.t =
   Buffer.add_char display_buffer '\n';
   Ok ()
 
 let step_counter = ref 0
 
-let clear_screen () : (unit, _) Result.t =
-  (* Efface l'écran avec le code ANSI *)
-  incr step_counter;
-  Format.printf
-    "================================================== Step n° %d \
-     ==================================================\n"
-    !step_counter;
-  (* Affiche le contenu du buffer *)
-  Format.printf "%s" (Buffer.contents display_buffer);
-  Format.pp_print_flush Format.std_formatter ();
-  (* Vide le buffer *)
-  Buffer.clear display_buffer;
-  Ok ()
+let sleep_duration = ref 0.0
 
-let sleep_duration_ms = ref 50
-
-let set_sleep_duration_ms ms =
-  sleep_duration_ms := ms
+let set_sleep_duration t =
+  sleep_duration := t
 
 let sleep () : (unit, _) Result.t =
-  let seconds = Float.of_int !sleep_duration_ms /. 1000.0 in
+  let seconds = !sleep_duration in
   Unix.sleepf seconds;
   Ok ()
 
@@ -70,7 +50,22 @@ let config_w = ref 0
 let config_h = ref 0
 let steps = ref 0
 let has_config = ref false
+let use_graphical_window = ref 0
 
+let clear_screen () : (unit, _) Result.t =
+  (* Efface l'écran avec le code ANSI *)
+  incr step_counter;
+  if !use_graphical_window = 0 then
+  (Format.printf
+    "================================================== Step n° %d \
+     ==================================================\n"
+    !step_counter;
+  (* Affiche le contenu du buffer *)
+  Format.printf "%s" (Buffer.contents display_buffer);
+  Format.pp_print_flush Format.std_formatter ();
+  (* Vide le buffer *)
+  Buffer.clear display_buffer);
+  sleep ()
 let load_config_file path =
   let ic = open_in path in
   let line = input_line ic in
@@ -120,6 +115,10 @@ let config_next_cell () : (Kdo.Concrete.I32.t, _) Result.t =
     Ok (Kdo.Concrete.I32.of_int cells.(idx))
   end
 
+let print_cell (alive : Kdo.Concrete.I32.t) (row : Kdo.Concrete.I32.t) (col : Kdo.Concrete.I32.t) : (unit, _) Result.t =
+  if !use_graphical_window = 1 then Concrete_gui.set_cell ~row:(Kdo.Concrete.I32.to_int row) ~col:(Kdo.Concrete.I32.to_int col) ~alive:(Kdo.Concrete.I32.to_int alive <> 0) 
+  else Buffer.add_string display_buffer (if Kdo.Concrete.I32.to_int alive <> 0 then "X" else " ");
+  Ok ()
 
 let m =
   let open Kdo.Concrete.Extern_func in
@@ -129,7 +128,6 @@ let m =
       ("print_i32", Extern_func (i32 ^->. unit, print_i32));
       ("print_i64", Extern_func (i64 ^->. unit, print_i64));
       ("random_i32", Extern_func (unit ^->. i32, random_i32));
-      ("print_cell", Extern_func (i32 ^->. unit, print_cell));
       ("newline", Extern_func (unit ^->. unit, newline));
       ("clear_screen", Extern_func (unit ^->. unit, clear_screen));
       ("sleep", Extern_func (unit ^->. unit, sleep));
@@ -140,6 +138,8 @@ let m =
       ("config_get_w", Extern_func (unit ^->. i32, config_get_w));
       ("config_get_h", Extern_func (unit ^->. i32, config_get_h));
       ("config_next_cell", Extern_func (unit ^->. i32, config_next_cell));
+      ("print_cell", Extern_func (i32 ^-> i32 ^-> i32 ^->. unit, print_cell));
+      ("render", Extern_func (unit ^->. unit, Concrete_gui.render));
     ]
   in
   {

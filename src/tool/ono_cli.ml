@@ -86,6 +86,6 @@ let use_graphical_window =
   let doc = "Window to display the game." in
   Arg.(value & flag (info [ "use-graphical-window" ] ~doc ~docv:"USE GRAPHICAL WINDOW"))
 
-let sleep_duration_ms =
+let sleep_duration =
   let doc = "Sleep duration between steps in milliseconds." in
-  Arg.(value & opt (some int) None (info [ "sleep" ] ~doc ~docv:"SLEEP"))
+  Arg.(value & opt (some float) None (info [ "sleep" ] ~doc ~docv:"SLEEP"))
