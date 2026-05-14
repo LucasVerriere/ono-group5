@@ -53,7 +53,7 @@ Le `step` fait un `swap_buffers` à la fin pour basculer entre "current" et "nex
 
 Owi imprime un bloc `model { ... }` quand il trouve une configuration valide, c'est lui qui contient les valeurs concrètes des symboles. Il génère aussi un fichier XML au format SoSy-Lab, mais on a fini par parser le bloc texte avec une regex OCaml parce que le XML s'est révélé compliqué à exploiter (voir section suivante).
 
-## Difficultés rencontrées et ce qui n'a pas marché
+## Difficultés rencontrées
 
 ### Le testcase XML
 
