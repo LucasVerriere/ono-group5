@@ -14,7 +14,8 @@
   (import "ono" "config_get_h" (func $config_get_h (result i32)))
   (import "ono" "check_pause" (func $check_pause (result i32)))
   (import "ono" "set_pause" (func $set_pause))
-
+  (import "ono" "read_int" (func $read_int (result i32)))
+  (import "ono" "init_graphical_window" (func $init_graphical_window (param i32) (param i32)))
 
   ;; ===== Mémoire =====
   (memory (export "memory") 1)
@@ -169,6 +170,8 @@
   (func $init_grid
     (local $i i32)
     (local $j i32)
+    (global.set $w (call $read_int))
+    (global.set $h (call $read_int))
 
     (local.set $i (i32.const 0))
     (block $outer_exit
@@ -270,6 +273,7 @@
       (then (call $init_from_file))
       (else (call $init_grid))
     )
+    (call $init_graphical_window (global.get $w) (global.get $h))
 
     ;; récupère le nombre d'étapes (-1 = infini)
     (local.set $steps (call $get_steps))

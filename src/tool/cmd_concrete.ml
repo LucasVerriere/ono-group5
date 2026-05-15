@@ -32,7 +32,6 @@ let term =
     (match config_file with
     | Some path -> (Ono.Concrete_ono_module.load_config_file (Fpath.to_string path);)
     | None -> ());
-    if use_graphical_window then Ono.Concrete_gui.init ~nb_rows:!(Ono.Concrete_ono_module.config_h) ~nb_cols:!(Ono.Concrete_ono_module.config_w);
     (Ono.Concrete_driver.run ~source_file |> function
     | Ok () -> Ok ()
     | Error e -> Error (`Msg (Kdo.R.err_to_string e)))

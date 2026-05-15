@@ -18,14 +18,17 @@ let data:d = {
   paused = false;
 }
 
-let init ~nb_rows ~nb_cols =
+let init (row : Kdo.Concrete.I32.t) (col : Kdo.Concrete.I32.t) : (unit, _) Result.t =
+  let nb_rows = Kdo.Concrete.I32.to_int row in
+  let nb_cols = Kdo.Concrete.I32.to_int col in
   data.nb_rows <- nb_rows;
   data.nb_cols <- nb_cols;
   data.grid <- Array.make_matrix nb_rows nb_cols 0;
   let width = (nb_cols * data.cell_size) in
   let height = (nb_rows * data.cell_size) in
   init_window width height "Game of Life";
-  data.initialised <- true
+  data.initialised <- true;
+  Ok()
 
 let set_cell ~row ~col ~alive =
   if row >=0 && row < data.nb_rows && col>=0 && col < data.nb_cols then data.grid.(row).(col) <- if alive then 1 else 0
