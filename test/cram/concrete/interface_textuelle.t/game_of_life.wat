@@ -172,6 +172,7 @@
     (local $j i32)
     (global.set $w (call $read_int))
     (global.set $h (call $read_int))
+    (call $init_graphical_window (global.get $w) (global.get $h))
 
     (local.set $i (i32.const 0))
     (block $outer_exit
@@ -273,7 +274,6 @@
       (then (call $init_from_file))
       (else (call $init_grid))
     )
-    (call $init_graphical_window (global.get $w) (global.get $h))
 
     ;; récupère le nombre d'étapes (-1 = infini)
     (local.set $steps (call $get_steps))

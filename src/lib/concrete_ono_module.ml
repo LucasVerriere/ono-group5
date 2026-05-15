@@ -54,12 +54,11 @@ let config_w = ref 0
 let config_h = ref 0
 let steps = ref 0
 let has_config = ref false
-let use_graphical_window = ref 0
 
 let clear_screen () : (unit, _) Result.t =
   (* Efface l'écran avec le code ANSI *)
   incr step_counter;
-  if !use_graphical_window = 0 then
+  if !Concrete_gui.use_graphical_window = 0 then
   (Format.printf
     "================================================== Step n° %d \
      ==================================================\n"
@@ -121,7 +120,7 @@ let config_next_cell () : (Kdo.Concrete.I32.t, _) Result.t =
   end
 
 let print_cell (alive : Kdo.Concrete.I32.t) (row : Kdo.Concrete.I32.t) (col : Kdo.Concrete.I32.t) : (unit, _) Result.t =
-  if !use_graphical_window = 1 then Concrete_gui.set_cell ~row:(Kdo.Concrete.I32.to_int row) ~col:(Kdo.Concrete.I32.to_int col) ~alive:(Kdo.Concrete.I32.to_int alive <> 0) 
+  if !Concrete_gui.use_graphical_window = 1 then Concrete_gui.set_cell ~row:(Kdo.Concrete.I32.to_int row) ~col:(Kdo.Concrete.I32.to_int col) ~alive:(Kdo.Concrete.I32.to_int alive <> 0) 
   else Buffer.add_string display_buffer (if Kdo.Concrete.I32.to_int alive <> 0 then "X" else " ");
   Ok ()
 

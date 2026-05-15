@@ -18,7 +18,10 @@ let data:d = {
   paused = false;
 }
 
+let use_graphical_window = ref 0
+
 let init (row : Kdo.Concrete.I32.t) (col : Kdo.Concrete.I32.t) : (unit, _) Result.t =
+  if !use_graphical_window = 0 then Ok () else
   let nb_rows = Kdo.Concrete.I32.to_int row in
   let nb_cols = Kdo.Concrete.I32.to_int col in
   data.nb_rows <- nb_rows;
