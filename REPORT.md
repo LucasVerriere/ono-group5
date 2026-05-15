@@ -1,3 +1,22 @@
+# Solveur de polynômes
+
+Le solveur implémenté est capable de donner toutes la racines du polynôme lorsqu'il y en a plusieurs. Pour cela il fournit plusieurs modèles (autant de modèles que de racines) tout en indiquant lequel est le meilleur (celui fournissant le plus de solutions).
+
+Pour réaliser cela il nous a fallut utiliser la fonction `assume` d'owi qui nous permet d'ajouter des contraintes à la condition de chemin, puis rendre accessible l'option `--no-stop-at-failure` qui elle permet de chercher des modèles pour tous les traps `unreachable` rencontrés. Sans cela notre solveur ne s'arrête que sur un modèle et là il faudrait décider lequel: celui à une solution ? celui à deux ? celui à trois ? En effet, les trois sont mutuellement exclusifs. Quand on veut trouver trois solutions, il nous faut imposer que `p1 = p2 = p3 = 0` et que `x1 != x2 != x3` ; mais si jamais le polynôme n'a qu'une seule racine cet ensemble de contraintes n'est pas satisfaisable et le solveur symbolique ne retourne aucun modèle, or il y a bel et bien une solution ! Il a fallut donc séparer les recherches de une, deux et trois solutions dépendantes de leurs contraintes respectives, et essayer de trouver un modèle pour chacun de ces cas.
+
+Aussi un autre problème est celui du dépassement d'entier qui menait le solveur à nous proposer des modèles qui n'étaient à priori pas des solutions. Cela rendait un test acceptable du solveur de polynôme impossible. Pour un polynôme qui a `-1` comme racine on obtient un nombre "aléatoire" ; alors oui on sait qu'il y'a donc une solution mais on sait pas s'il s'agit du `-1` recherché. Nous avons avons donc borné les `x` à `[-100,100]` pour s'assurer que nos tests étaient valides. Cette fonctionnalité a été par après transformée en option `--restrict-x`.
+
+Pour tester le solveur de polynôme, lancez depuis la racine du projet:
+
+```bash
+dune exec -- ono symbolic test/cram/symbolic/polynomial.t/polynomial.wat --no-stop-at-failure --restrict-x
+```
+ou 
+```bash
+dune exec -- ono symbolic test/cram/symbolic/polynomial.t/polynomial.wat --no-stop-at-failure
+```
+si vous ne voulez pas bornez les x.
+
 # Génération de configurations pour le jeu de la Vie
 
 ## Ce qu'on a fait
