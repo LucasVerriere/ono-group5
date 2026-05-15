@@ -45,9 +45,11 @@ Nous avons décidé d'ajouter une fonctionnalité pour faire pause entre les ét
 
 Il suffit d'appuyer sur **espace** pour faire pause dans la fenêtre graphique.
 
-Un problème est vite apparu, il est difficile d'utiliser Raylib sur un autre thread. Il semble aussi impossible de faire la gestion des évènements sur un autre thread que le main thread. Pour mettre en place cette fonctionallité nous avons du modifier la fonction de sleep afin de ne dormir que par blocs de 10ms afin de récupérer les évènements.
-
 De plus, le flag `--end-pause` permet de mettre automatiquement en pause sur la dernière étape.
+
+Un problème est vite apparu car il est difficile d'utiliser Raylib sur un autre thread. Il semble aussi impossible de faire la gestion des évènements sur un autre thread que le main thread. Pour mettre en place cette fonctionallité nous avons du modifier la fonction de sleep afin de ne dormir que par blocs de 10ms afin de récupérer les évènements.
+
+Une piste d'amélioration serait donc de modifier l'implémentation actuelle afin d'avoir la logique du jeu dans un thread séparé du main thread afin de faciliter l'utilisation de raylib. 
 
 
 ## 2. Partie II — Interpréteur symbolique
