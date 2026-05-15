@@ -41,18 +41,7 @@ ono-group5/
 
 ### 3.2 Interface textuelle
 
-#### Architecture générale
 
-Conformément aux consignes, tout ce qui pouvait être fait en Wasm l'a été. Les fonctions OCaml exposées au module Wasm sont :
-
-| Fonction OCaml | Signature | Rôle |
-|---|---|---|
-| `sleep` | `f32 -> unit` | Pause entre deux affichages |
-| `print_cell` | `i32 -> unit` | Affiche `🦊` (vivant) ou ` ` (mort) dans le buffer |
-| `newline` | `unit -> unit` | Ajoute un retour chariot au buffer |
-| `clear_screen` | `unit -> unit` | Affiche le buffer à l'écran et le vide |
-
-L'affichage passe par un `Buffer.t` OCaml non exposé directement au code Wasm. `clear_screen` affiche le buffer complet et efface l'écran via la séquence d'échappement ANSI `\027[2J`.
 
 #### Implémentation Wasm
 
@@ -74,24 +63,23 @@ Le module Wasm du Jeu de la Vie repose sur :
 
 ## 3.3 Interface graphique
 
-#### Choix de la bibliothèque
-
-Nous avons utilisé la bibliothèque OCaml **Raylib** (binding OCaml de la bibliothèque C raylib) pour l'interface graphique. Ce choix s'explique par sa simplicité d'utilisation et ses bonnes performances pour l'affichage 2D.
+Nous avons utilisé la bibliothèque OCaml **Raylib** pour l'interface graphique. Ce choix s'explique par sa simplicité d'utilisation qui se concentre sur l'affichage de forme.
 
 > **Prérequis** : l'installation de raylib nécessite `opam install raylib`.
 
-#### Architecture
-
-Le même module Wasm est utilisé pour les deux interfaces. L'option `--use-graphical-window` ajoutée à `ono run` permet de lancer le programme en mode interface graphique :
+L'option `--use-graphical-window` ajoutée à `ono run` permet de lancer le programme en mode interface graphique :
 
 ```bash
-# Interface textuelle
-dune exec -- ono concrete test/cram/concrete/interface_textuelle.t/game_of_life.wat --file test/cram/concrete/interface_textuelle.t/glider.life --steps 50 
- 
+
 # Interface graphique
 dune exec -- ono concrete test/cram/concrete/interface_textuelle.t/game_of_life.wat --file test/cram/concrete/interface_textuelle.t/glider.life --steps 8 --use-graphical-window --sleep 1
-
 ```
+
+Nous avons commencé par modifier le code existant pour le rendre compatible à ce nouveau mode d'affichage. 
+Nous voulions au départ transmettre l'accès à la mémoire Wasm dans OCaml mais cela ne suivait pas notre logique précédente d'affichage. En effet, notre affichage dans le mode textuelle est fait cellule par cellule. Cela ne suit donc pas notre première implémentation et ne respecte pas entièrement la consigne de "faire le plus en Wasm possible".
+Nous avons donc choisis de faire une copie cellule par cellule de la mémoire dans un tableau.
+
+Nous avons décider d'ajouter une fonctionnalité pour faire pause entre les étapes. Un problème est vite apparu, il est difficile d'utiliser Raylib sur un autre thread. Il semble aussi impossible de faire la gestion des évènements sur un autre thread que le main thread.
 
 ## 4. Partie II — Interpréteur symbolique
 
