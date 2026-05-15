@@ -2,41 +2,18 @@
 
 ## Table des matières
 
-1. [Introduction](#1-introduction)
-2. [Partie I — Interpréteur concret](#3-partie-i--interpréteur-concret)
-    - 2.1 [Interface textuelle](#32-interface-textuelle)
-    - 2.2 [Interface graphique](#33-interface-graphique)
-3. [Partie II — Interpréteur symbolique](#4-partie-ii--interpréteur-symbolique)
-    - 3.1 [Préliminaires — Solveur de polynômes](#41-préliminaires--solveur-de-polynômes)
-    - 3.2 [Génération de configurations pour le Jeu de la Vie](#42-génération-de-configurations-pour-le-jeu-de-la-vie)
+1. [Partie I — Interpréteur concret](#3-partie-i--interpréteur-concret)
+    - 1.1 [Interface textuelle](#32-interface-textuelle)
+    - 1.2 [Interface graphique](#33-interface-graphique)
+2. [Partie II — Interpréteur symbolique](#4-partie-ii--interpréteur-symbolique)
+    - 2.1 [Préliminaires — Solveur de polynômes](#41-préliminaires--solveur-de-polynômes)
+    - 2.2 [Génération de configurations pour le Jeu de la Vie](#42-génération-de-configurations-pour-le-jeu-de-la-vie)
 ---
 
-## 1. Introduction
+## 1. Interface
 
 
-### Structure du code
-
-```
-ono-group5/
-├── src/
-│   ├── lib/               # Bibliothèque principale OCaml
-│   └── tool/              # Exécutable ono_main
-├── test/
-│   ├── cram/
-│   │   ├── concrete/      # Tests de l'interface textuelle et graphique
-│   │   └── symbolic/      # Tests de l'exécution symbolique
-│   └── ...
-├── scripts/
-│   ├── to_life.ml         # Conversion sortie Owi → format .life
-│   └── gen_life.sh        # Wrapper d'automatisation
-├── CHANGES.md
-└── REPORT.md
-```
-
-## 2. Interface
-
-
-### 2.1 Interface textuelle
+### 1.1 Interface textuelle
 
 
 
@@ -46,7 +23,7 @@ Une première difficulté a été rencontrée lorsque l'affichage textuel n'éta
 
 Le mode interface textuelle se lance par défaut
 
-### 2.2 Interface graphique
+### 1.2 Interface graphique
 
 Nous avons utilisé la bibliothèque OCaml **Raylib** pour l'interface graphique. Ce choix s'explique par sa simplicité d'utilisation qui se concentre sur l'affichage de forme.
 
@@ -73,9 +50,9 @@ Un problème est vite apparu, il est difficile d'utiliser Raylib sur un autre th
 De plus, le flag `--end-pause` permet de mettre automatiquement en pause sur la dernière étape.
 
 
-## 3. Partie II — Interpréteur symbolique
+## 2. Partie II — Interpréteur symbolique
 
-### 3.1 Préliminaires — Solveur de polynômes
+### 2.1 Préliminaires — Solveur de polynômes
 
 Le solveur implémenté est capable de donner toutes les racines du polynôme lorsqu'il y en a plusieurs. Pour cela il fournit plusieurs modèles (autant de modèles que de racines) tout en indiquant lequel est le meilleur (celui fournissant le plus de solutions).
 
@@ -95,7 +72,7 @@ dune exec -- ono symbolic test/cram/symbolic/polynomial.t/polynomial.wat --no-st
 si vous ne voulez pas bornez les x.
 
 
-### 3.2 Génération de configurations pour le Jeu de la Vie
+### 2.2 Génération de configurations pour le Jeu de la Vie
 
 #### Ce qu'on a fait
 
