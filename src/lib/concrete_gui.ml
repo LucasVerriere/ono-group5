@@ -44,13 +44,13 @@ let draw_cells ()=
       ) row_content ) data.grid
 
 let render ()=
-  if data.initialised then 
+  if data.initialised then
     (begin_drawing ();
     clear_background Color.raywhite;
     draw_grid ();
     draw_cells ();
-    end_drawing ());
-  if window_should_close () then close_window ();
+    end_drawing ();
+    if window_should_close () then close_window ());
   Ok()
 
 let w_should_close () =
