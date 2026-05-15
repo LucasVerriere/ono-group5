@@ -3,15 +3,14 @@
 ## Table des matières
 
 1. [Introduction](#1-introduction)
-2. [Organisation du projet](#2-organisation-du-projet)
-3. [Partie I — Interpréteur concret](#3-partie-i--interpréteur-concret)
-    - 3.1 [Préliminaires](#31-préliminaires)
-    - 3.2 [Interface textuelle](#32-interface-textuelle)
-    - 3.3 [Interface graphique](#33-interface-graphique)
-4. [Partie II — Interpréteur symbolique](#4-partie-ii--interpréteur-symbolique)
-    - 4.1 [Préliminaires — Solveur de polynômes](#41-préliminaires--solveur-de-polynômes)
-    - 4.2 [Génération de configurations pour le Jeu de la Vie](#42-génération-de-configurations-pour-le-jeu-de-la-vie)
-5. [Conclusion](#7-conclusion)
+2. [Partie I — Interpréteur concret](#3-partie-i--interpréteur-concret)
+    - 2.1 [Préliminaires](#31-préliminaires)
+    - 2.2 [Interface textuelle](#32-interface-textuelle)
+    - 2.3 [Interface graphique](#33-interface-graphique)
+3. [Partie II — Interpréteur symbolique](#4-partie-ii--interpréteur-symbolique)
+    - 3.1 [Préliminaires — Solveur de polynômes](#41-préliminaires--solveur-de-polynômes)
+    - 3.2 [Génération de configurations pour le Jeu de la Vie](#42-génération-de-configurations-pour-le-jeu-de-la-vie)
+4. [Conclusion](#7-conclusion)
 ---
 
 ## 1. Introduction
@@ -36,10 +35,10 @@ ono-group5/
 └── REPORT.md
 ```
 
-## 3. Partie I — Interpréteur concret
+## 2. Partie I — Interpréteur concret
 
 
-### 3.2 Interface textuelle
+### 2.2 Interface textuelle
 
 
 
@@ -61,7 +60,7 @@ Le module Wasm du Jeu de la Vie repose sur :
 - **Option `--sleep <t>`** : délai entre deux affichages (en secondes ou millisecondes selon l'implémentation).
 - **Cram tests** : des configurations initiales (planeur *glider*, bloc stable, etc.) et des tests cram ont été écrits pour valider le comportement du simulateur.
 
-## 3.3 Interface graphique
+## 2.3 Interface graphique
 
 Nous avons utilisé la bibliothèque OCaml **Raylib** pour l'interface graphique. Ce choix s'explique par sa simplicité d'utilisation qui se concentre sur l'affichage de forme.
 
@@ -81,9 +80,9 @@ Nous avons donc choisis de faire une copie cellule par cellule de la mémoire da
 
 Nous avons décider d'ajouter une fonctionnalité pour faire pause entre les étapes. Un problème est vite apparu, il est difficile d'utiliser Raylib sur un autre thread. Il semble aussi impossible de faire la gestion des évènements sur un autre thread que le main thread.
 
-## 4. Partie II — Interpréteur symbolique
+## 3. Partie II — Interpréteur symbolique
 
-### 4.1 Préliminaires — Solveur de polynômes
+### 3.1 Préliminaires — Solveur de polynômes
 
 Le solveur implémenté est capable de donner toutes les racines du polynôme lorsqu'il y en a plusieurs. Pour cela il fournit plusieurs modèles (autant de modèles que de racines) tout en indiquant lequel est le meilleur (celui fournissant le plus de solutions).
 
@@ -103,7 +102,7 @@ dune exec -- ono symbolic test/cram/symbolic/polynomial.t/polynomial.wat --no-st
 si vous ne voulez pas bornez les x.
 
 
-### 4.2 Génération de configurations pour le Jeu de la Vie
+### 3.2 Génération de configurations pour le Jeu de la Vie
 
 #### Ce qu'on a fait
 
