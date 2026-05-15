@@ -45,7 +45,7 @@ let draw_cells ()=
         draw_rectangle (col_nb*data.cell_size) (row_nb*data.cell_size) (data.cell_size) (data.cell_size) Color.black 
       ) row_content ) data.grid
 
-let render ()=
+let render () =
   if data.initialised then
     (begin_drawing ();
     clear_background Color.raywhite;
@@ -55,9 +55,10 @@ let render ()=
     if Raylib.is_key_pressed Key.Space then (data.paused <- not data.paused);
     if window_should_close () then close_window (););
   Ok()
-
+let end_pause = ref false
 let set_pause () = 
-  data.paused <- not data.paused; Ok()
+  if !end_pause then data.paused <- not data.paused; 
+  Ok()
 
   let check_pause () : (Kdo.Concrete.I32.t, _) Result.t = 
     ignore(render ());

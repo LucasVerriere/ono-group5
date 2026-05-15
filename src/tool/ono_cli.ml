@@ -87,5 +87,9 @@ let use_graphical_window =
   Arg.(value & flag (info [ "use-graphical-window" ] ~doc ~docv:"USE GRAPHICAL WINDOW"))
 
 let sleep_duration =
-  let doc = "Sleep duration between steps in milliseconds." in
+  let doc = "Sleep duration between steps." in
   Arg.(value & opt (some float) None (info [ "sleep" ] ~doc ~docv:"SLEEP"))
+
+let end_pause =
+  let doc = "Pause at the end." in
+  Arg.(value & flag (info [ "end-pause" ] ~doc ~docv:"END PAUSE"))

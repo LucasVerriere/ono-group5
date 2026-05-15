@@ -20,10 +20,12 @@ let term =
   and+ config_file = config_file 
   and+ steps = steps 
   and+ use_graphical_window = use_graphical_window
-  and+ sleep = sleep_duration in
+  and+ sleep = sleep_duration
+  and+ end_pause = end_pause in
 
     Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> Int.max_int);
     Ono.Concrete_ono_module.use_graphical_window := (if use_graphical_window then 1 else 0);
+    Ono.Concrete_gui.end_pause := end_pause;
     (match sleep with Some t -> Ono.Concrete_ono_module.set_sleep_duration t | None -> ());
     (* Charger le fichier de config si fourni *)
     (match seed with Some s -> Random.init s | None -> Random.self_init ());
