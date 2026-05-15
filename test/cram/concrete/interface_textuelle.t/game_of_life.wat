@@ -241,6 +241,7 @@
     (local.set $i (i32.const 0))
     (global.set $w (call $config_get_w))
     (global.set $h (call $config_get_h))
+    (call $init_graphical_window (global.get $w) (global.get $h))
     (global.set $size (i32.mul (global.get $w) (global.get $h)))
     (global.set $next_offset (i32.mul (global.get $w) (global.get $h)))
     (block $outer_exit
