@@ -17,9 +17,7 @@
 4. [Partie II — Interpréteur symbolique](#4-partie-ii--interpréteur-symbolique)
     - 4.1 [Préliminaires — Solveur de polynômes](#41-préliminaires--solveur-de-polynômes)
     - 4.2 [Génération de configurations pour le Jeu de la Vie](#42-génération-de-configurations-pour-le-jeu-de-la-vie)
-5. [Points subtils et difficultés rencontrées](#5-points-subtils-et-difficultés-rencontrées)
-6. [Ce qui n'a pas fonctionné](#6-ce-qui-na-pas-fonctionné)
-7. [Conclusion](#7-conclusion)
+5. [Conclusion](#7-conclusion)
 ---
 
 ## 1. Introduction
