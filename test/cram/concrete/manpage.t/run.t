@@ -11,6 +11,9 @@ Test the output of the man page:
              Source file to analyze.
   
   OPTIONS
+         --end-pause
+             Pause at the end.
+  
          --file=CONFIG
              Initial configuration file (.life format).
   
@@ -18,7 +21,7 @@ Test the output of the man page:
              Random seed.
   
          --sleep=SLEEP
-             Sleep duration between steps in milliseconds.
+             Sleep duration between steps.
   
          --steps=STEPS
              Number of steps to simulate.
