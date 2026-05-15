@@ -50,6 +50,7 @@ let render ()=
     draw_grid ();
     draw_cells ();
     end_drawing ());
+  if window_should_close () then close_window ();
   Ok()
 
 let w_should_close () =

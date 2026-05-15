@@ -65,7 +65,8 @@ let clear_screen () : (unit, _) Result.t =
   Format.pp_print_flush Format.std_formatter ();
   (* Vide le buffer *)
   Buffer.clear display_buffer);
-  sleep ()
+  Ok ()
+  
 let load_config_file path =
   let ic = open_in path in
   let line = input_line ic in
