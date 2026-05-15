@@ -1,4 +1,134 @@
-# Solveur de polynômes
+# Rapport de Projet — ONO : Interpréteur Symbolique pour WebAssembly
+
+**Cours** : Génie Logiciel  
+**Projet** : ONO — Jeu de la Vie & Exécution Symbolique  
+**Groupe** : Groupe 5
+ 
+---
+
+## Table des matières
+
+1. [Introduction](#1-introduction)
+2. [Organisation du projet](#2-organisation-du-projet)
+3. [Partie I — Interpréteur concret](#3-partie-i--interpréteur-concret)
+    - 3.1 [Préliminaires](#31-préliminaires)
+    - 3.2 [Interface textuelle](#32-interface-textuelle)
+    - 3.3 [Interface graphique](#33-interface-graphique)
+4. [Partie II — Interpréteur symbolique](#4-partie-ii--interpréteur-symbolique)
+    - 4.1 [Préliminaires — Solveur de polynômes](#41-préliminaires--solveur-de-polynômes)
+    - 4.2 [Génération de configurations pour le Jeu de la Vie](#42-génération-de-configurations-pour-le-jeu-de-la-vie)
+5. [Points subtils et difficultés rencontrées](#5-points-subtils-et-difficultés-rencontrées)
+6. [Ce qui n'a pas fonctionné](#6-ce-qui-na-pas-fonctionné)
+7. [Conclusion](#7-conclusion)
+---
+
+## 1. Introduction
+
+Ce projet a pour objectif de nous familiariser avec un **interpréteur symbolique pour WebAssembly (Wasm)** à travers la réalisation en plusieurs étapes du célèbre **Jeu de la Vie de Conway**. Le projet se décompose en deux grandes parties :
+
+- **Partie I** : Implémentation d'un interpréteur concret du Jeu de la Vie en Wasm, avec une interface textuelle dans le terminal puis une interface graphique.
+- **Partie II** : Utilisation de l'interpréteur symbolique **Owi** pour générer automatiquement des configurations initiales satisfaisant des contraintes précises.
+  L'outil central du projet est **Owi**, un interpréteur WebAssembly capable d'exécuter des programmes à la fois de manière concrète et symbolique. En mode symbolique, Owi explore tous les chemins d'exécution possibles et utilise un solveur SMT pour trouver des assignations de valeurs satisfaisant des propriétés données.
+
+---
+
+### Structure du code
+
+```
+ono-group5/
+├── src/
+│   ├── lib/               # Bibliothèque principale OCaml
+│   └── tool/              # Exécutable ono_main
+├── test/
+│   ├── cram/
+│   │   ├── concrete/      # Tests de l'interface textuelle et graphique
+│   │   └── symbolic/      # Tests de l'exécution symbolique
+│   └── ...
+├── scripts/
+│   ├── to_life.ml         # Conversion sortie Owi → format .life
+│   └── gen_life.sh        # Wrapper d'automatisation
+├── CHANGES.md
+└── REPORT.md
+```
+
+## 3. Partie I — Interpréteur concret
+
+### 3.1 Préliminaires
+
+#### Factorielle en Wasm
+
+Le premier exercice consistait à écrire un module Wasm implémentant une fonction `$factorial` récursive avec un `if (then) (else)`, puis une fonction `$main` l'appelant avec la valeur 5 et affichant le résultat via `print_i32`.
+
+Un cram test a été ajouté en utilisant `dune runtest` puis `dune promote` pour valider le résultat.
+
+#### `print_i64` et `$square_i64`
+
+La fonction `print_i64` a été ajoutée au module OCaml `concrete_ono_module.ml` (définition de la fonction puis ajout à la liste des fonctions exportées). Un module Wasm `square_i64.wat` appelle ensuite `$square_i64` avec la valeur `50_000` et affiche le résultat.
+
+#### `random_i32` et gestion du seed
+
+La fonction `random_i32` a été ajoutée côté OCaml. Pour rendre les cram tests déterministes, une option `--seed <n>` a été ajoutée à la commande `ono run` :
+
+- Si `--seed` est fourni, `Random.init` est appelé avec la valeur donnée.
+- Sinon, `Random.self_init` est appelé pour une séquence différente à chaque exécution.
+
+### 3.2 Interface textuelle
+
+#### Architecture générale
+
+Conformément aux consignes, tout ce qui pouvait être fait en Wasm l'a été. Les fonctions OCaml exposées au module Wasm sont :
+
+| Fonction OCaml | Signature | Rôle |
+|---|---|---|
+| `sleep` | `f32 -> unit` | Pause entre deux affichages |
+| `print_cell` | `i32 -> unit` | Affiche `🦊` (vivant) ou ` ` (mort) dans le buffer |
+| `newline` | `unit -> unit` | Ajoute un retour chariot au buffer |
+| `clear_screen` | `unit -> unit` | Affiche le buffer à l'écran et le vide |
+
+L'affichage passe par un `Buffer.t` OCaml non exposé directement au code Wasm. `clear_screen` affiche le buffer complet et efface l'écran via la séquence d'échappement ANSI `\027[2J`.
+
+#### Implémentation Wasm
+
+Le module Wasm du Jeu de la Vie repose sur :
+
+- Des **variables globales** pour la largeur `$w` et la hauteur `$h`.
+- La **mémoire linéaire** Wasm pour stocker l'état des cellules (deux buffers pour l'alternance courant/suivant).
+- Des fonctions utilitaires de conversion 2D ↔ 1D.
+- Les fonctions `$is_alive`, `$count_alive_neighbours`, `$step`, et `$print_grid` entièrement en Wasm.
+  À chaque étape, il y a une petite chance qu'une cellule vivante apparaisse spontanément (équivalent Wasm du `Random.int 10000 = 0` du code OCaml de référence).
+
+#### Extensions réalisées
+
+- **`read_int`** : ajout d'une fonction OCaml permettant à l'utilisateur de saisir les dimensions de la grille au démarrage.
+- **Format de fichier `.life`** : définition d'un format de configuration initiale, permettant de charger une grille depuis un fichier via l'option `--file <fichier>`.
+- **Option `--steps <n>`** : simule exactement `n` tours puis s'arrête.
+- **Option `--sleep <t>`** : délai entre deux affichages (en secondes ou millisecondes selon l'implémentation).
+- **Cram tests** : des configurations initiales (planeur *glider*, bloc stable, etc.) et des tests cram ont été écrits pour valider le comportement du simulateur.
+
+## 3.3 Interface graphique
+
+#### Choix de la bibliothèque
+
+Nous avons utilisé la bibliothèque OCaml **Raylib** (binding OCaml de la bibliothèque C raylib) pour l'interface graphique. Ce choix s'explique par sa simplicité d'utilisation et ses bonnes performances pour l'affichage 2D.
+
+> **Prérequis** : l'installation de raylib nécessite `opam install raylib`.
+
+#### Architecture
+
+Le même module Wasm est utilisé pour les deux interfaces. L'option `--use-graphical-window` ajoutée à `ono run` permet à l'utilisateur de choisir le rendu au lancement :
+
+```bash
+# Interface textuelle
+dune exec -- ono concrete test/cram/concrete/interface_textuelle.t/game_of_life.wat --file test/cram/concrete/interface_textuelle.t/glider.life --steps 50 
+ 
+# Interface graphique
+dune exec -- ono concrete test/cram/concrete/interface_textuelle.t/game_of_life.wat --file test/cram/concrete/interface_textuelle.t/glider.life --steps 8 --use-graphical-window --sleep 1
+
+```
+
+## 4. Partie II — Interpréteur symbolique
+
+### 4.1 Préliminaires — Solveur de polynômes
 
 Le solveur implémenté est capable de donner toutes la racines du polynôme lorsqu'il y en a plusieurs. Pour cela il fournit plusieurs modèles (autant de modèles que de racines) tout en indiquant lequel est le meilleur (celui fournissant le plus de solutions).
 
@@ -11,15 +141,16 @@ Pour tester le solveur de polynôme, lancez depuis la racine du projet:
 ```bash
 dune exec -- ono symbolic test/cram/symbolic/polynomial.t/polynomial.wat --no-stop-at-failure --restrict-x
 ```
-ou 
+ou
 ```bash
 dune exec -- ono symbolic test/cram/symbolic/polynomial.t/polynomial.wat --no-stop-at-failure
 ```
 si vous ne voulez pas bornez les x.
 
-# Génération de configurations pour le jeu de la Vie
 
-## Ce qu'on a fait
+### 4.2 Génération de configurations pour le Jeu de la Vie
+
+#### Ce qu'on a fait
 
 Le travail s'est fait dans deux fichiers principaux :
 
@@ -29,7 +160,7 @@ Le travail s'est fait dans deux fichiers principaux :
 
 Un wrapper bash (`scripts/gen_life.sh`) automatise tout le pipeline.
 
-## Comment ça marche concrètement
+#### Comment ça marche concrètement
 
 Le principe général est le même pour toutes les contraintes :
 
@@ -48,13 +179,13 @@ chmod +x scripts/gen_life.sh
 
 Puis on charge `./scripts/solution.life` dans l'interface graphique pour vérifier visuellement que la propriété est bien satisfaite au tour suivant.
 
-## Les contraintes implémentées
+#### Les contraintes implémentées
 
 Toutes les contraintes proposées dans le `README.md`
 
-## Points subtils de cette partie du projet
+#### Points subtils de cette partie du projet
 
-### Les `if` symboliques tuent les performances
+#### Les `if` symboliques tuent les performances
 
 C'est le piège principal de toute la démarche. Au départ, le code était écrit naïvement avec des `if` qui branchaient sur le contenu des cellules. Sur une grille 2×3 ça passait, mais sur une 5×5 mon ordi crashait.
 
@@ -64,23 +195,23 @@ La solution : réécrire sans `if` symboliques, avec des expressions booléennes
 
 Résultat : le programme tourne maintenant en quelques secondes.
 
-### Le buffer double dans `print_initial_grid`
+#### Le buffer double dans `print_initial_grid`
 
 Le `step` fait un `swap_buffers` à la fin pour basculer entre "current" et "next". Du coup, après une étape, ce qu'on voit comme "la grille actuelle" est en fait le résultat du calcul, et l'état initial est dans l'autre buffer. `print_initial_grid` doit faire un `swap_buffers` avant d'afficher pour retrouver l'état initial.
 
-### Le format de sortie d'Owi
+#### Le format de sortie d'Owi
 
 Owi imprime un bloc `model { ... }` quand il trouve une configuration valide, c'est lui qui contient les valeurs concrètes des symboles. Il génère aussi un fichier XML au format SoSy-Lab, mais on a fini par parser le bloc texte avec une regex OCaml parce que le XML s'est révélé compliqué à exploiter (voir section suivante).
 
-## Difficultés rencontrées
+#### Difficultés rencontrées
 
-### Le testcase XML
+#### Le testcase XML
 
 Owi génère un fichier XML à chaque exécution réussie, dans `test/cram/symbolic/configuration_gen.t/test-suite/testcase-1.xml`.
 
 En pratique, c'est pénible car le fichier n'est pas régénéré si la contrainte n'est pas satisfaite, donc on risque de lire un ancien résultat sans s'en rendre compte. Après plusieurs essaies, on a choisi de parsing le bloc `model { ... }` directement dans la sortie standard. Beaucoup plus prévisible.
 
-### On a dû mettre toute la grille en symbolique, même là où ce n'était pas nécessaire
+#### On a dû mettre toute la grille en symbolique, même là où ce n'était pas nécessaire
 
 Pour certaines contraintes (1, 2, 6, 7), il aurait suffi de symboliser une petite zone : le voisinage 3×3 autour de la cellule cible pour 1 et 2, un rectangle autour de la ligne/colonne pour 6 et 7. C'est ce que on avait fait au départ, avec des fonctions dédiées (`init_neighbors_as_symbols`, mode "rectangle" de `init_rectangle_as_symbols`).
 
@@ -90,13 +221,13 @@ On a donc choisi de symboliser systématiquement toute la grille.
 
 **Important** : on a laissé dans le `.wat` les fonctions `init_neighbors_as_symbols` et le mode "rectangle" de `init_rectangle_as_symbols`, même si elles ne sont plus appelées. C'est volontaire : on voulait montrer qu'on avait bien compris qu'il était possible de ne symboliser qu'une sous-partie de la grille, et que on avait su écrire les bonnes abstractions pour ça.
 
-## Comment exécuter le programme
+#### Comment exécuter le programme
 
-### Prérequis
+#### Prérequis
 
 Aucun paquet opam supplémentaire n'a été nécessaire au-delà de ce qui était déjà dans le projet.
 
-### Génération d'une configuration
+#### Génération d'une configuration
 
 Depuis la racine du projet :
 
@@ -108,7 +239,7 @@ Le script affiche `Entrez le numéro de la contrainte :` taper un numéro entre 
 
 Si la contrainte est insatisfiable, le script affiche un message clair et n'écrit pas de fichier.
 
-### Si on veut tester manuellement sans le wrapper
+#### Si on veut tester manuellement sans le wrapper
 
 ```bash
 dune exec -- ono symbolic test/cram/symbolic/configuration_gen.t/constraints.wat 2>&1 \
@@ -116,7 +247,7 @@ dune exec -- ono symbolic test/cram/symbolic/configuration_gen.t/constraints.wat
   > ./scripts/solution.life
 ```
 
-### Ajuster les paramètres des contraintes
+#### Ajuster les paramètres des contraintes
 
 Certaines contraintes ont des paramètres définis comme globales dans `constraints.wat` :
 - `TARGET_I`, `TARGET_J` pour les contraintes 1 et 2 (la cellule cible)
@@ -126,6 +257,6 @@ Certaines contraintes ont des paramètres définis comme globales dans `constrai
 
 Pour les modifier, éditer directement les `(global ...)` en début du fichier.
 
-### Ajuster la taille de la grille
+#### Ajuster la taille de la grille
 
 Pareil : changer les valeurs de `$w` et `$h` au début de `constraints.wat`. Le script `gen_life.sh` lit automatiquement ces valeurs avec un `grep`, donc rien d'autre à toucher.
