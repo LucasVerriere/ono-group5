@@ -33,38 +33,26 @@ ono-group5/
 └── REPORT.md
 ```
 
-## 2. Partie I — Interpréteur concret
+## 2. Interface
 
 
 ### 2.1 Interface textuelle
 
 
 
-#### Implémentation Wasm
+Pour l'interface textuelle nous avons décidé d'afficher des **X** pour représenter une cellule vivante et un espace pour les cellules mortes. Ce choix a été fait car il est clair et que les symboles de vie ou de mort gardent la même taille. En effet, avec le symbole 🦊, un décalage se formait au bout d'un certain temps.
 
-Le module Wasm du Jeu de la Vie repose sur :
+Une première difficulté a été rencontrée lorsque l'affichage textuel n'était pas réconnu dans les cram tests. Après un long moment de recherche nous avons découvert que les balises pour modifier la couleur dans le terminal empêchaient au cram test de lire le résultat.
 
-- Des **variables globales** pour la largeur `$w` et la hauteur `$h`.
-- La **mémoire linéaire** Wasm pour stocker l'état des cellules (deux buffers pour l'alternance courant/suivant).
-- Des fonctions utilitaires de conversion 2D ↔ 1D.
-- Les fonctions `$is_alive`, `$count_alive_neighbours`, `$step`, et `$print_grid` entièrement en Wasm.
-  À chaque étape, il y a une petite chance qu'une cellule vivante apparaisse spontanément (équivalent Wasm du `Random.int 10000 = 0` du code OCaml de référence).
+Le mode interface textuelle se lance par défaut
 
-#### Extensions réalisées
-
-- **`read_int`** : ajout d'une fonction OCaml permettant à l'utilisateur de saisir les dimensions de la grille au démarrage.
-- **Format de fichier `.life`** : définition d'un format de configuration initiale, permettant de charger une grille depuis un fichier via l'option `--file <fichier>`.
-- **Option `--steps <n>`** : simule exactement `n` tours puis s'arrête.
-- **Option `--sleep <t>`** : délai entre deux affichages (en secondes ou millisecondes selon l'implémentation).
-- **Cram tests** : des configurations initiales (planeur *glider*, bloc stable, etc.) et des tests cram ont été écrits pour valider le comportement du simulateur.
-
-## 2.2 Interface graphique
+### 2.2 Interface graphique
 
 Nous avons utilisé la bibliothèque OCaml **Raylib** pour l'interface graphique. Ce choix s'explique par sa simplicité d'utilisation qui se concentre sur l'affichage de forme.
 
 > **Prérequis** : l'installation de raylib nécessite `opam install raylib`.
 
-Le flag `--use-graphical-window` ajoutée à `ono run` permet de lancer le programme en mode interface graphique :
+Le flag `--use-graphical-window` ajouté à `ono run` permet de lancer le programme en mode interface graphique :
 
 ```bash
 
