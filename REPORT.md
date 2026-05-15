@@ -61,16 +61,16 @@ dune exec -- ono concrete test/cram/concrete/interface_textuelle.t/game_of_life.
 ```
 
 Nous avons commencé par modifier le code existant pour le rendre compatible à ce nouveau mode d'affichage. 
-Nous voulions au départ transmettre l'accès à la mémoire Wasm dans OCaml mais cela ne suivait pas notre logique précédente d'affichage. En effet, notre affichage dans le mode textuelle est fait cellule par cellule. Cela ne suit donc pas notre première implémentation et ne respecte pas entièrement la consigne de "faire le plus en Wasm possible".
-Nous avons donc choisis de faire une copie cellule par cellule de la mémoire dans un tableau.
+Nous voulions au départ transmettre l'accès à la mémoire Wasm dans OCaml mais cela ne suivait pas notre logique précédente d'affichage. En effet, notre affichage dans le mode textuel est fait cellule par cellule. Cela ne suit donc pas notre première implémentation et ne respecte pas entièrement la consigne de "faire le plus en Wasm possible".
+Nous avons donc choisi de faire une copie cellule par cellule de la mémoire dans un tableau.
 
-Nous avons décider d'ajouter une fonctionnalité pour faire pause entre les étapes.
+Nous avons décidé d'ajouter une fonctionnalité pour faire pause entre les étapes.
 
 Il suffit d'appuyer sur **espace** pour faire pause dans la fenêtre graphique.
 
-Un problème est vite apparu, il est difficile d'utiliser Raylib sur un autre thread. Il semble aussi impossible de faire la gestion des évènements sur un autre thread que le main thread. Pour mettre en place cette fonctionalité nous avons du modifier la fonction de sleep afin de ne dormir que par bloque de 10ms afin de récupérer les évènements.
+Un problème est vite apparu, il est difficile d'utiliser Raylib sur un autre thread. Il semble aussi impossible de faire la gestion des évènements sur un autre thread que le main thread. Pour mettre en place cette fonctionallité nous avons du modifier la fonction de sleep afin de ne dormir que par blocs de 10ms afin de récupérer les évènements.
 
-De plus le flag `--end-pause` permet de mettre automatiquement en pause sur la dernière étape.
+De plus, le flag `--end-pause` permet de mettre automatiquement en pause sur la dernière étape.
 
 
 ## 3. Partie II — Interpréteur symbolique
