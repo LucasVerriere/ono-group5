@@ -26,7 +26,7 @@ La plus grande difficulté lors de cette phase a été de comprendre le fonction
 
 Pour l'interface textuelle nous avons décidé d'afficher des **X** pour représenter une cellule vivante et un espace pour les cellules mortes. Ce choix a été fait car il est clair et que les symboles de vie ou de mort gardent la même taille. En effet, avec le symbole 🦊, un décalage se formait au bout d'un certain temps.
 
-Une première difficulté a été rencontrée lorsque l'affichage textuel n'était pas réconnu dans les cram tests. Après un long moment de recherche nous avons découvert que les balises pour modifier la couleur dans le terminal empêchaient au cram test de lire le résultat.
+Une première difficulté a été rencontrée lorsque l'affichage textuel n'était pas reconnu dans les cram tests. Après un long moment de recherche nous avons découvert que les balises pour modifier la couleur dans le terminal empêchaient les cram tests de lire le résultat.
 
 Le mode interface textuelle se lance par défaut
 
@@ -38,7 +38,7 @@ Lorsque cette option est absente, la hauteur et la largeur sont demandés dans l
 
 Pour les configurations initiales nous avons choisi d'aller au plus simple en représentant chaque case par un **"X"** si la cellule est vivante et un **"."** sinon. La hauteur et la largeur de la carte sont précisées sur la première ligne séparées par un espace. Nous avions remarqué l'existence du format RLE (Run-Length Encoding) qui est plus efficace pour une grande taille de carte.
 
-De plus l'option `--steps INT` permet de définir le nombre maximal d'étape du jeu de la vie. Il sera par défaut infini.
+De plus l'option `--steps INT` permet de définir le nombre maximal d'étapes du jeu de la vie. Il sera par défaut infini.
 
 ### 1.4 Interface graphique
 
@@ -54,7 +54,7 @@ Le flag `--use-graphical-window` ajouté à `ono run` permet de lancer le progra
 dune exec -- ono concrete test/cram/concrete/interface_textuelle.t/game_of_life.wat --file test/cram/concrete/interface_textuelle.t/glider.life --steps 8 --use-graphical-window --sleep 1
 ```
 
-Nous avons commencé par modifier le code existant pour le rendre compatible à ce nouveau mode d'affichage. 
+Nous avons commencé par modifier le code existant pour le rendre compatible avec ce nouveau mode d'affichage. 
 Nous voulions au départ transmettre l'accès à la mémoire Wasm dans OCaml mais cela ne suivait pas notre logique précédente d'affichage. En effet, notre affichage dans le mode textuel est fait cellule par cellule. Cela ne suit donc pas notre première implémentation et ne respecte pas entièrement la consigne de "faire le plus en Wasm possible".
 Nous avons donc choisi de faire une copie cellule par cellule de la mémoire dans un tableau.
 
@@ -64,9 +64,9 @@ Il suffit d'appuyer sur **espace** pour faire pause dans la fenêtre graphique.
 
 De plus, le flag `--end-pause` permet de mettre automatiquement en pause sur la dernière étape.
 
-Un problème est vite apparu car il est difficile d'utiliser Raylib sur un autre thread. Il semble aussi impossible de faire la gestion des évènements sur un autre thread que le main thread. Pour mettre en place cette fonctionallité nous avons du modifier la fonction de sleep afin de ne dormir que par blocs de 10ms afin de récupérer les évènements.
+Un problème est vite apparu car il est difficile d'utiliser Raylib sur un autre thread. Il semble aussi impossible de faire la gestion des évènements sur un autre thread que le main thread. Pour mettre en place cette fonctionnalité nous avons du modifier la fonction de sleep afin de ne dormir que par blocs de 10ms afin de récupérer les évènements.
 
-Une piste d'amélioration serait donc de modifier l'implémentation actuelle afin d'avoir la logique du jeu dans un thread séparé du main thread afin de faciliter l'utilisation de raylib. 
+Une piste d'amélioration serait donc de modifier l'implémentation actuelle afin d'avoir la logique du jeu dans un thread séparé du main thread afin de faciliter l'utilisation de raylib.
 
 
 ## 2. Partie II — Interpréteur symbolique
