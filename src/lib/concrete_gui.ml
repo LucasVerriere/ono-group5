@@ -52,7 +52,7 @@ let render ()=
     draw_grid ();
     draw_cells ();
     end_drawing ();
-    if Raylib.is_key_pressed Key.Space then (data.paused <- not data.paused; print_endline "toggled pause!");
+    if Raylib.is_key_pressed Key.Space then (data.paused <- not data.paused);
     if window_should_close () then close_window (););
   Ok()
 
