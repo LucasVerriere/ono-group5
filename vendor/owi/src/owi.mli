@@ -972,6 +972,8 @@ module Symbolic_i32 : sig
 
   val ge : t -> t -> Symbolic_boolean.t
 
+  val to_boolean : t -> Symbolic_boolean.t
+
   val pp : t Fmt.t
 
   val symbol : Smtml.Symbol.t -> t
@@ -1023,6 +1025,8 @@ module Symbolic_choice : sig
   val map : 'a t -> ('a -> 'b) -> 'b t
 
   val trap : Result.err -> 'a t
+
+  val assume : Symbolic_boolean.t -> Int.t Option.t -> unit t
 end
 
 module Symbolic_extern_func : sig

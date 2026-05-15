@@ -8,12 +8,44 @@ let i32_symbol () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
   Kdo.Symbolic.Choice.with_new_symbol (Smtml.Ty.Ty_bitv 32)
     Kdo.Symbolic.I32.symbol
 
-let read_i32 () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
-  let value = read_int () in
-  Kdo.Symbolic.Choice.return (Kdo.Symbolic.I32.of_int value)
+let assume (b : Kdo.Symbolic.I32.t) : unit Kdo.Symbolic.Choice.t =
+  Kdo.Symbolic.Choice.assume (Kdo.Symbolic.I32.to_boolean b) None
+
+let restrict_x_enabled = ref false
+
+let set_restrict_x value = restrict_x_enabled := value
+
+let restrict_x () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
+  Kdo.Symbolic.Choice.return
+    (Kdo.Symbolic.I32.of_int (if !restrict_x_enabled then 1 else 0))
+
+let rec read_i32 () : Kdo.Symbolic.I32.t Kdo.Symbolic.Choice.t =
+  try
+    let value = read_int () in
+    Kdo.Symbolic.Choice.return (Kdo.Symbolic.I32.of_int value)
+  with Failure _ ->
+    Printf.printf " pleaz enter a number\n  > ";
+    Out_channel.flush Out_channel.stdout;
+    read_i32 ()
 
 let print_prompt () : unit Kdo.Symbolic.Choice.t =
   print_string "Entrez le numéro de la contrainte : ";
+  Kdo.Symbolic.Choice.return ()
+
+let print_header () : unit Kdo.Symbolic.Choice.t =
+  Logs.app (fun m -> m "\n====== Degree 3 Polynomial Solver ======\n");
+  Logs.app (fun m -> m "Solving: p(x) = a*x³ + b*x² + c*x + d = 0\n");
+  Logs.app (fun m -> m "Enter coefficients a, b, c and d:");
+  Kdo.Symbolic.Choice.return ()
+
+let prompt () : unit Kdo.Symbolic.Choice.t =
+  Printf.printf "> ";
+  Out_channel.flush Out_channel.stdout;
+  Kdo.Symbolic.Choice.return ()
+
+
+let print_solutions () : unit Kdo.Symbolic.Choice.t =
+  Logs.app (fun m -> m "\nSolutions are symbol_0, symbol_1 and symbol_2 of the model with the maximal symbol_3; symbol_3 is the number of solutions.\nThere are no solutions if no model is found.\n");
   Kdo.Symbolic.Choice.return ()
 
 let m =
@@ -25,6 +57,11 @@ let m =
       ("i32_symbol", Extern_func (unit ^->. i32, i32_symbol));
       ("read_i32", Extern_func (unit ^->. i32, read_i32));
       ("print_prompt", Extern_func (unit ^->. unit, print_prompt));
+      ("print_header", Extern_func (unit ^->. unit, print_header));
+      ("prompt", Extern_func (unit ^->. unit, prompt));
+      ("print_solutions", Extern_func (unit ^->. unit, print_solutions));
+      ("assume", Extern_func (i32 ^->. unit, assume));
+      ("restrict_x", Extern_func (unit ^->. i32, restrict_x));
     ]
   in
   {
