@@ -2,3 +2,5 @@ _build
 *.coverage
 _coverage
 _opam
+test-suite/
+solution.life
