@@ -10,10 +10,13 @@
     - 2.2 [Génération de configurations pour le Jeu de la Vie](#42-génération-de-configurations-pour-le-jeu-de-la-vie)
 ---
 
-## 1. Interface
+## 1. Première partie : l'interpréteur concret
 
+### 1.1 Préliminaires
 
-### 1.1 Interface textuelle
+La plus grande difficulté lors de cette phase a été de comprendre le fonctionnement des options et d'apprendre le Wasm.
+
+### 1.2 Interface textuelle
 
 
 
@@ -23,7 +26,11 @@ Une première difficulté a été rencontrée lorsque l'affichage textuel n'éta
 
 Le mode interface textuelle se lance par défaut
 
-### 1.2 Interface graphique
+### 1.3 Extensions
+
+Pour les configurations initiales nous avons choisi d'aller au plus simple en représentant chaque case par un **"X"** si la cellule est vivante et un **"."** sinon. Nous avions remarquer l'existence du format RLE (Run-Length Encoding) qui est plus efficace pour une grande taille de carte.
+
+### 1.4 Interface graphique
 
 Nous avons utilisé la bibliothèque OCaml **Raylib** pour l'interface graphique. Ce choix s'explique par sa simplicité d'utilisation qui se concentre sur l'affichage de forme.
 
