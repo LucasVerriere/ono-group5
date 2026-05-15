@@ -1,10 +1,4 @@
-# Rapport de Projet — ONO : Interpréteur Symbolique pour WebAssembly
-
-**Cours** : Génie Logiciel  
-**Projet** : ONO — Jeu de la Vie & Exécution Symbolique  
-**Groupe** : Groupe 5
- 
----
+# Rapport de Projet — ONO :
 
 ## Table des matières
 
@@ -22,13 +16,6 @@
 
 ## 1. Introduction
 
-Ce projet a pour objectif de nous familiariser avec un **interpréteur symbolique pour WebAssembly (Wasm)** à travers la réalisation en plusieurs étapes du célèbre **Jeu de la Vie de Conway**. Le projet se décompose en deux grandes parties :
-
-- **Partie I** : Implémentation d'un interpréteur concret du Jeu de la Vie en Wasm, avec une interface textuelle dans le terminal puis une interface graphique.
-- **Partie II** : Utilisation de l'interpréteur symbolique **Owi** pour générer automatiquement des configurations initiales satisfaisant des contraintes précises.
-  L'outil central du projet est **Owi**, un interpréteur WebAssembly capable d'exécuter des programmes à la fois de manière concrète et symbolique. En mode symbolique, Owi explore tous les chemins d'exécution possibles et utilise un solveur SMT pour trouver des assignations de valeurs satisfaisant des propriétés données.
-
----
 
 ### Structure du code
 
@@ -51,24 +38,6 @@ ono-group5/
 
 ## 3. Partie I — Interpréteur concret
 
-### 3.1 Préliminaires
-
-#### Factorielle en Wasm
-
-Le premier exercice consistait à écrire un module Wasm implémentant une fonction `$factorial` récursive avec un `if (then) (else)`, puis une fonction `$main` l'appelant avec la valeur 5 et affichant le résultat via `print_i32`.
-
-Un cram test a été ajouté en utilisant `dune runtest` puis `dune promote` pour valider le résultat.
-
-#### `print_i64` et `$square_i64`
-
-La fonction `print_i64` a été ajoutée au module OCaml `concrete_ono_module.ml` (définition de la fonction puis ajout à la liste des fonctions exportées). Un module Wasm `square_i64.wat` appelle ensuite `$square_i64` avec la valeur `50_000` et affiche le résultat.
-
-#### `random_i32` et gestion du seed
-
-La fonction `random_i32` a été ajoutée côté OCaml. Pour rendre les cram tests déterministes, une option `--seed <n>` a été ajoutée à la commande `ono run` :
-
-- Si `--seed` est fourni, `Random.init` est appelé avec la valeur donnée.
-- Sinon, `Random.self_init` est appelé pour une séquence différente à chaque exécution.
 
 ### 3.2 Interface textuelle
 
@@ -113,7 +82,7 @@ Nous avons utilisé la bibliothèque OCaml **Raylib** (binding OCaml de la bibli
 
 #### Architecture
 
-Le même module Wasm est utilisé pour les deux interfaces. L'option `--use-graphical-window` ajoutée à `ono run` permet à l'utilisateur de choisir le rendu au lancement :
+Le même module Wasm est utilisé pour les deux interfaces. L'option `--use-graphical-window` ajoutée à `ono run` permet de lancer le programme en mode interface graphique :
 
 ```bash
 # Interface textuelle
@@ -128,7 +97,7 @@ dune exec -- ono concrete test/cram/concrete/interface_textuelle.t/game_of_life.
 
 ### 4.1 Préliminaires — Solveur de polynômes
 
-Le solveur implémenté est capable de donner toutes la racines du polynôme lorsqu'il y en a plusieurs. Pour cela il fournit plusieurs modèles (autant de modèles que de racines) tout en indiquant lequel est le meilleur (celui fournissant le plus de solutions).
+Le solveur implémenté est capable de donner toutes les racines du polynôme lorsqu'il y en a plusieurs. Pour cela il fournit plusieurs modèles (autant de modèles que de racines) tout en indiquant lequel est le meilleur (celui fournissant le plus de solutions).
 
 Pour réaliser cela il nous a fallut utiliser la fonction `assume` d'owi qui nous permet d'ajouter des contraintes à la condition de chemin, puis rendre accessible l'option `--no-stop-at-failure` qui elle permet de chercher des modèles pour tous les traps `unreachable` rencontrés. Sans cela notre solveur ne s'arrête que sur un modèle et là il faudrait décider lequel: celui à une solution ? celui à deux ? celui à trois ? En effet, les trois sont mutuellement exclusifs. Quand on veut trouver trois solutions, il nous faut imposer que `p1 = p2 = p3 = 0` et que `x1 != x2 != x3` ; mais si jamais le polynôme n'a qu'une seule racine cet ensemble de contraintes n'est pas satisfaisable et le solveur symbolique ne retourne aucun modèle, or il y a bel et bien une solution ! Il a fallut donc séparer les recherches de une, deux et trois solutions dépendantes de leurs contraintes respectives, et essayer de trouver un modèle pour chacun de ces cas.
 
