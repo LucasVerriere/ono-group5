@@ -8,3 +8,4 @@
 | Bas            | Loussine | [loussine.bas@etu.u-paris.fr](mailto:loussine.bas@etu.u-paris.fr) |
 | Makani Mbelolo | Belbeni  | [belbeni-reille-kani.makani-mbelolo@etu.u-paris.fr](mailto:belbeni-reille-kani.makani-mbelolo@etu.u-paris.fr) |
 | Motaim         | Badr     | [badr.motaim@etu.u-paris.fr](mailto:badr.motaim@etu.u-paris.fr) |
+| NANMEDIGOU | Yendoumban | [yendoumban.nanmedigou@etu.u-paris.fr](mailto:yendoumban.nanmedigou@etu.u-paris.fr) |

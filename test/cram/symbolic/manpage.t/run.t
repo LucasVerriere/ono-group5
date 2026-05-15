@@ -4,11 +4,18 @@ Test the output of the man page:
          ono-symbolic
   
   SYNOPSIS
-         ono symbolic [OPTION]… FILE
+         ono symbolic [--no-stop-at-failure] [--restrict-x] [OPTION]… FILE
   
   ARGUMENTS
          FILE (required)
              Source file to analyze.
+  
+  OPTIONS
+         --no-stop-at-failure
+             Do not stop when a program failure is encountered.
+  
+         --restrict-x
+             Restrict symbolic x values to the interval [-100, 100].
   
   COMMON OPTIONS
          --color=WHEN (absent=auto)

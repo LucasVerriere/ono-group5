@@ -1,7 +1,7 @@
 open Syntax
 module Interpret = Kdo.Interpret.Symbolic (Kdo.Interpret.Default_parameters)
 
-let run ~source_file =
+let run ~source_file ~restrict_x ~no_stop_at_failure =
   (* Parsing. *)
   Logs.info (fun m -> m "Parsing file %a..." Fpath.pp source_file);
   let* wat_module = Kdo.Parse.Wat.Module.from_file source_file in
@@ -23,6 +23,7 @@ let run ~source_file =
   let link_state : Kdo.Symbolic.Extern_func.extern_func Kdo.Link.State.t =
     Kdo.Link.State.empty ()
   in
+  Symbolic_ono_module.set_restrict_x restrict_x;
   let link_state =
     Kdo.Link.Extern.modul Symbolic_ono_module.m link_state ~name:"ono"
   in
@@ -36,7 +37,7 @@ let run ~source_file =
   Interpret.modul link_state linked_module
   |> Kdo.Symbolic.Driver.handle_result
        ~exploration_strategy:Kdo.Symbolic.Parameters.Exploration_strategy.FIFO
-       ~workers:4 ~no_stop_at_failure:false ~no_value:false
+       ~workers:4 ~no_stop_at_failure ~no_value:false
        ~no_assert_failure_expression_printing:false
        ~deterministic_result_order:false ~fail_mode:Kdo.Symbolic.Parameters.Both
        ~workspace:(Fpath.v ".") ~solver:Smtml.Solver_type.Z3_solver

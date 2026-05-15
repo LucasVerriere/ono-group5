@@ -74,7 +74,22 @@ let source_file =
   Arg.(
     required & pos 0 (some existing_file_conv) None (info [] ~doc ~docv:"FILE"))
 
-let seed = 
-  let doc = "Random seed." in 
-  Arg.(
-    value & opt (some int) None (info ["seed"] ~doc ~docv:"SEED"))
+let seed =
+  let doc = "Random seed." in
+  Arg.(value & opt (some int) None (info [ "seed" ] ~doc ~docv:"SEED"))
+
+let steps =
+  let doc = "Number of steps to simulate." in
+  Arg.(value & opt (some int) None (info [ "steps" ] ~doc ~docv:"STEPS"))
+
+let use_graphical_window =
+  let doc = "Window to display the game." in
+  Arg.(value & flag (info [ "use-graphical-window" ] ~doc ~docv:"USE GRAPHICAL WINDOW"))
+
+let sleep_duration =
+  let doc = "Sleep duration between steps." in
+  Arg.(value & opt (some float) None (info [ "sleep" ] ~doc ~docv:"SLEEP"))
+
+let end_pause =
+  let doc = "Pause at the end." in
+  Arg.(value & flag (info [ "end-pause" ] ~doc ~docv:"END PAUSE"))

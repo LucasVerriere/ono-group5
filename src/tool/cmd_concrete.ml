@@ -5,11 +5,35 @@ open Ono_cli
 
 let info = Cmd.info "concrete" ~exits
 
+(* Nouvel argument --file *)
+let config_file =
+  let doc = "Initial configuration file (.life format)." in
+  Arg.(
+    value
+    & opt (some existing_file_conv) None (info [ "file" ] ~doc ~docv:"CONFIG"))
+
 let term =
   let open Term.Syntax in
-  let+ () = setup_log and+ source_file = source_file and+ seed = seed in
-  Ono.Concrete_driver.run ~source_file ~seed |> function
-  | Ok () -> Ok ()
-  | Error e -> Error (`Msg (Kdo.R.err_to_string e))
+  let+ () = setup_log
+  and+ source_file = source_file
+  and+ seed = seed
+  and+ config_file = config_file 
+  and+ steps = steps 
+  and+ use_graphical_window = use_graphical_window
+  and+ sleep = sleep_duration
+  and+ end_pause = end_pause in
 
+    Ono.Concrete_ono_module.steps := (match steps with Some s -> s | None -> Int.max_int);
+    Ono.Concrete_gui.use_graphical_window := (if use_graphical_window then 1 else 0);
+    Ono.Concrete_gui.end_pause := end_pause;
+    (match sleep with Some t -> Ono.Concrete_ono_module.set_sleep_duration t | None -> ());
+    (* Charger le fichier de config si fourni *)
+    (match seed with Some s -> Random.init s | None -> Random.self_init ());
+    (match config_file with
+    | Some path -> (Ono.Concrete_ono_module.load_config_file (Fpath.to_string path);)
+    | None -> ());
+    (Ono.Concrete_driver.run ~source_file |> function
+    | Ok () -> Ok ()
+    | Error e -> Error (`Msg (Kdo.R.err_to_string e)))
+  
 let cmd : Ono_cli.outcome Cmd.t = Cmd.v info term

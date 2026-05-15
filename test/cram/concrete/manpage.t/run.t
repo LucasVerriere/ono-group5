@@ -4,15 +4,30 @@ Test the output of the man page:
          ono-concrete
   
   SYNOPSIS
-         ono concrete [--seed=SEED] [OPTION]… FILE
+         ono concrete [OPTION]… FILE
   
   ARGUMENTS
          FILE (required)
              Source file to analyze.
   
   OPTIONS
+         --end-pause
+             Pause at the end.
+  
+         --file=CONFIG
+             Initial configuration file (.life format).
+  
          --seed=SEED
              Random seed.
+  
+         --sleep=SLEEP
+             Sleep duration between steps.
+  
+         --steps=STEPS
+             Number of steps to simulate.
+  
+         --use-graphical-window
+             Window to display the game.
   
   COMMON OPTIONS
          --color=WHEN (absent=auto)
@@ -69,3 +84,4 @@ Test the output of the man page:
   SEE ALSO
          ono(1)
   
+
