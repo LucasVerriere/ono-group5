@@ -56,6 +56,9 @@ let render ()=
     if window_should_close () then close_window (););
   Ok()
 
+let set_pause () = 
+  data.paused <- not data.paused; Ok()
+
   let check_pause () : (Kdo.Concrete.I32.t, _) Result.t = 
     ignore(render ());
     if data.paused then (Ok (Kdo.Concrete.I32.of_int 1)) else (Ok (Kdo.Concrete.I32.of_int 0))

@@ -146,6 +146,7 @@ let m =
       ("print_cell", Extern_func (i32 ^-> i32 ^-> i32 ^->. unit, print_cell));
       ("render", Extern_func (unit ^->. unit, Concrete_gui.render));
       ("check_pause", Extern_func (unit ^->. i32, Concrete_gui.check_pause));
+      ("set_pause", Extern_func (unit ^->. unit, Concrete_gui.set_pause));
     ]
   in
   {

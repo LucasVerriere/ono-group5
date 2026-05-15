@@ -13,6 +13,7 @@
   (import "ono" "config_get_w" (func $config_get_w (result i32)))
   (import "ono" "config_get_h" (func $config_get_h (result i32)))
   (import "ono" "check_pause" (func $check_pause (result i32)))
+  (import "ono" "set_pause" (func $set_pause))
 
 
   ;; ===== Mémoire =====
@@ -291,6 +292,8 @@
         (br $loop)
       )
     )
+    (call $set_pause)
+    (call $wait_pause_resume)
   )
 
   (start $main)
