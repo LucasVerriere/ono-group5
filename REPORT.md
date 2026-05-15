@@ -4,13 +4,11 @@
 
 1. [Introduction](#1-introduction)
 2. [Partie I — Interpréteur concret](#3-partie-i--interpréteur-concret)
-    - 2.1 [Préliminaires](#31-préliminaires)
-    - 2.2 [Interface textuelle](#32-interface-textuelle)
-    - 2.3 [Interface graphique](#33-interface-graphique)
+    - 2.1 [Interface textuelle](#32-interface-textuelle)
+    - 2.2 [Interface graphique](#33-interface-graphique)
 3. [Partie II — Interpréteur symbolique](#4-partie-ii--interpréteur-symbolique)
     - 3.1 [Préliminaires — Solveur de polynômes](#41-préliminaires--solveur-de-polynômes)
     - 3.2 [Génération de configurations pour le Jeu de la Vie](#42-génération-de-configurations-pour-le-jeu-de-la-vie)
-4. [Conclusion](#7-conclusion)
 ---
 
 ## 1. Introduction
@@ -38,7 +36,7 @@ ono-group5/
 ## 2. Partie I — Interpréteur concret
 
 
-### 2.2 Interface textuelle
+### 2.1 Interface textuelle
 
 
 
@@ -60,7 +58,7 @@ Le module Wasm du Jeu de la Vie repose sur :
 - **Option `--sleep <t>`** : délai entre deux affichages (en secondes ou millisecondes selon l'implémentation).
 - **Cram tests** : des configurations initiales (planeur *glider*, bloc stable, etc.) et des tests cram ont été écrits pour valider le comportement du simulateur.
 
-## 2.3 Interface graphique
+## 2.2 Interface graphique
 
 Nous avons utilisé la bibliothèque OCaml **Raylib** pour l'interface graphique. Ce choix s'explique par sa simplicité d'utilisation qui se concentre sur l'affichage de forme.
 
