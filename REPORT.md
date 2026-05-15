@@ -40,6 +40,8 @@ Pour les configurations initiales nous avons choisi d'aller au plus simple en re
 
 De plus l'option `--steps INT` permet de définir le nombre maximal d'étapes du jeu de la vie. Il sera par défaut infini.
 
+L'option `--sleep FLOAT` permet de mettre en pause l'exécution pour un temps donné entre chaque étape.
+
 ### 1.4 Interface graphique
 
 Nous avons utilisé la bibliothèque OCaml **Raylib** pour l'interface graphique. Ce choix s'explique par sa simplicité d'utilisation qui se concentre sur l'affichage de forme.
