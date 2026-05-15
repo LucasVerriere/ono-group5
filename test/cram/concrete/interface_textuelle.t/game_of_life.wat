@@ -12,6 +12,7 @@
   (import "ono" "render" (func $render))
   (import "ono" "config_get_w" (func $config_get_w (result i32)))
   (import "ono" "config_get_h" (func $config_get_h (result i32)))
+  (import "ono" "check_pause" (func $check_pause (result i32)))
 
 
   ;; ===== Mémoire =====
@@ -154,6 +155,15 @@
     (call $swap_buffers)
   )
 
+  (func $wait_pause_resume
+    (block $break_loop
+      (loop $continue_loop
+        (br_if $break_loop (i32.eq (call $check_pause) (i32.const 0)))
+        (br $continue_loop)
+      )
+    )
+  )
+
   ;; ===== Initialisation aléatoire (~10% de cellules vivantes) =====
   (func $init_grid
     (local $i i32)
@@ -266,6 +276,7 @@
 
     (block $exit
       (loop $loop
+        (call $wait_pause_resume)
         ;; si steps != -1 et i >= steps, on sort
         (br_if $exit
           (i32.and

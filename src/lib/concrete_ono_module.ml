@@ -27,10 +27,14 @@ let sleep_duration = ref 0.0
 let set_sleep_duration t =
   sleep_duration := t
 
+let rec sleep_render (f : Kdo.Concrete.F32.t) : (unit, _) Result.t =
+  let reste = (Kdo.Concrete.F32.to_float f) -. 0.01 in
+  if reste > 0.0 then (Unix.sleepf 0.01; ignore(Concrete_gui.render ()); sleep_render (Kdo.Concrete.F32.of_float reste))
+  else Ok ()
+
 let sleep () : (unit, _) Result.t =
-  let seconds = !sleep_duration in
-  Unix.sleepf seconds;
-  Ok ()
+  let seconds = Kdo.Concrete.F32.of_float !sleep_duration in
+  sleep_render seconds
 
 let get_tail () : (Kdo.Concrete.I32.t, _) Result.t =
   Ok (Kdo.Concrete.I32.of_int 0)
@@ -141,6 +145,7 @@ let m =
       ("config_next_cell", Extern_func (unit ^->. i32, config_next_cell));
       ("print_cell", Extern_func (i32 ^-> i32 ^-> i32 ^->. unit, print_cell));
       ("render", Extern_func (unit ^->. unit, Concrete_gui.render));
+      ("check_pause", Extern_func (unit ^->. i32, Concrete_gui.check_pause));
     ]
   in
   {

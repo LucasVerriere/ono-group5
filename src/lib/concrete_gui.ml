@@ -6,6 +6,7 @@ type d = {
   cell_size : int;
   mutable grid : int array array;
   mutable initialised : bool;
+  mutable paused : bool;
 }
 
 let data:d = {
@@ -14,6 +15,7 @@ let data:d = {
   cell_size = 20;
   grid = [||];
   initialised = false;
+  paused = false;
 }
 
 let init ~nb_rows ~nb_cols =
@@ -50,8 +52,13 @@ let render ()=
     draw_grid ();
     draw_cells ();
     end_drawing ();
-    if window_should_close () then close_window ());
+    if Raylib.is_key_pressed Key.Space then (data.paused <- not data.paused; print_endline "toggled pause!");
+    if window_should_close () then close_window (););
   Ok()
+
+  let check_pause () : (Kdo.Concrete.I32.t, _) Result.t = 
+    ignore(render ());
+    if data.paused then (Ok (Kdo.Concrete.I32.of_int 1)) else (Ok (Kdo.Concrete.I32.of_int 0))
 
 let w_should_close () =
   data.initialised && window_should_close ()
