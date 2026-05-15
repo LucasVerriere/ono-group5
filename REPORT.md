@@ -2,9 +2,13 @@
 
 ## Table des matières
 
-1. [Partie I — Interpréteur concret](#3-partie-i--interpréteur-concret)
-    - 1.1 [Interface textuelle](#32-interface-textuelle)
-    - 1.2 [Interface graphique](#33-interface-graphique)
+
+1. [Première partie : l'interpréteur concret](#1-première-partie--linterpréteur-concret)
+   - 1.1 [Préliminaires](#11-préliminaires)
+   - 1.2 [Interface textuelle](#12-interface-textuelle)
+   - 1.3 [Extensions](#13-extensions)
+   - 1.4 [Interface graphique](#14-interface-graphique)
+
 2. [Partie II — Interpréteur symbolique](#4-partie-ii--interpréteur-symbolique)
     - 2.1 [Préliminaires — Solveur de polynômes](#41-préliminaires--solveur-de-polynômes)
     - 2.2 [Génération de configurations pour le Jeu de la Vie](#42-génération-de-configurations-pour-le-jeu-de-la-vie)
@@ -28,7 +32,13 @@ Le mode interface textuelle se lance par défaut
 
 ### 1.3 Extensions
 
-Pour les configurations initiales nous avons choisi d'aller au plus simple en représentant chaque case par un **"X"** si la cellule est vivante et un **"."** sinon. Nous avions remarquer l'existence du format RLE (Run-Length Encoding) qui est plus efficace pour une grande taille de carte.
+L'option `--file PATH/to/file.life` suivi d'un path correspondant permet d'utiliser une configuration initiale.
+
+Lorsque cette option est absente, la hauteur et la largeur sont demandés dans le terminal et des cellules vivantes apparaissent aléatoirement au début.
+
+Pour les configurations initiales nous avons choisi d'aller au plus simple en représentant chaque case par un **"X"** si la cellule est vivante et un **"."** sinon. La hauteur et la largeur de la carte sont précisées sur la première ligne séparées par un espace. Nous avions remarqué l'existence du format RLE (Run-Length Encoding) qui est plus efficace pour une grande taille de carte.
+
+De plus l'option `--steps INT` permet de définir le nombre maximal d'étape du jeu de la vie. Il sera par défaut infini.
 
 ### 1.4 Interface graphique
 
